@@ -1,0 +1,27 @@
+.container {
+  height: 100vh; /* 使 body 高度为视口高度 */
+  width: 100vw;
+  margin: 0 auto; /* 去掉默认的 margin */
+  background-color: #f0f0f0; /* 设置背景色 */
+}
+
+.center {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
