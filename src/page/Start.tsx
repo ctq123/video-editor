@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import ExamPage from './ExamPage';
 import Draggable from '../components/Draggable';
 import CameraRecord, { CameraRecordHandle } from '../components/CameraRecord';
+import debounce from 'lodash/debounce';
 import './Start.css'
 
 const Start: React.FC = () => {
@@ -16,6 +17,10 @@ const Start: React.FC = () => {
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     document.addEventListener('mozfullscreenchange', handleFullscreenChange);
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    const winSizeChange = debounce(handleWinSizeChange, 200); // 200ms 节流时间
+    // 监听窗口大小变化
+    window.addEventListener('resize', winSizeChange);
 
     // 监听切屏
     document.addEventListener('visibilitychange', handleSwitchScreen);
@@ -31,12 +36,14 @@ const Start: React.FC = () => {
     document.addEventListener('mouseleave', handleMouseleave);
     // 监听窗口失去焦点
     document.addEventListener('blur', handleBlur);
-    
+
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
       document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
       document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+      // 监听窗口大小变化
+      window.removeEventListener('resize', winSizeChange);
 
       document.removeEventListener('visibilitychange', handleSwitchScreen);
 
@@ -50,48 +57,79 @@ const Start: React.FC = () => {
   }, []);
 
   const openFullscreen = () => {
-    const elem = document.documentElement as HTMLElement; // 选择要全屏的元素
-
+    try {
+      const elem = document.documentElement as HTMLElement; // 选择要全屏的元素
+  
+      // 退出全屏模式（如果已经在全屏模式中）
+      if (isFullScreen()) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().then(() => {
+            // 退出全屏后再次尝试进入全屏
+            requestFullscreen(elem);
+          }).catch((err: any) => console.error('退出全屏失败:', err));
+        } else if ((document as any).msExitFullscreen) {
+          (document as any).msExitFullscreen().then(() => {
+            // 退出全屏后再次尝试进入全屏
+            requestFullscreen(elem);
+          }).catch((err: any) => console.error('退出全屏失败:', err));
+        } else if ((document as any).webkitExitFullscreen) {
+          (document as any).webkitExitFullscreen().then(() => {
+            // 退出全屏后再次尝试进入全屏
+            requestFullscreen(elem);
+          }).catch((err: any) => console.error('退出全屏失败:', err));
+        } else if ((document as any).mozCancelFullScreen) {
+          (document as any).mozCancelFullScreen().then(() => {
+            // 退出全屏后再次尝试进入全屏
+            requestFullscreen(elem);
+          }).catch((err: any) => console.error('退出全屏失败:', err));
+        }
+      } else {
+        // 如果当前未全屏，直接尝试进入全屏
+        requestFullscreen(elem);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  
+  const requestFullscreen = (elem: HTMLElement) => {
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
     } else if ((elem as any).mozRequestFullScreen) {
-      // Firefox
       (elem as any).mozRequestFullScreen();
     } else if ((elem as any).webkitRequestFullscreen) {
-      // Chrome, Safari, and Opera
       (elem as any).webkitRequestFullscreen();
     } else if ((elem as any).msRequestFullscreen) {
-      // IE/Edge
       (elem as any).msRequestFullscreen();
     } else {
       alert('您的浏览器不支持全屏模式，请使用其他浏览器或手动全屏');
     }
   };
+  
 
-  const handleFullscreenChange = (event: Event) => {
-    if (
-      document.fullscreenElement ||
-      (document as any).webkitFullscreenElement || // 对应 WebKit 浏览器
-      (document as any).mozFullScreenElement ||    // 对应 Firefox 浏览器
-      (document as any).msFullscreenElement        // 对应 IE/Edge 浏览器
-    ) {
-      console.log('进入全屏');
+  const isFullScreen = () => {
+    return document.fullscreenElement || 
+      (document as any).mozFullScreenElement || 
+      (document as any).webkitFullscreenElement || 
+      (document as any).msFullscreenElement 
+  }
+
+  const handleFullscreenChange = () => {
+    if (isFullScreen()) {      
+      console.log('进入全屏模式');
       setIsStart(true);
     } else {
-      console.log('退出全屏');
-      // alert('确认退出考试？');
-      // 处理退出全屏后的逻辑
-      // proc
+      console.log('退出全屏模式');
       setIsStart(false);
+    }
+  }
 
-      // 自定义消息
-      const confirmationMessage = '确认退出考试？';
-
-      // 现代浏览器可能会忽略自定义消息
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      event.returnValue = confirmationMessage;
-      return confirmationMessage;
+  const handleWinSizeChange = () => {
+    // 处理退出全屏模式无响应的补丁
+    console.log('window.innerHeight', window.innerHeight, window.innerHeight === screen.height)
+    if (isFullScreen() && window.innerHeight !== screen.height) {
+      console.log('退出全屏模式1');
+      setIsStart(false);
     }
   }
 
@@ -228,7 +266,7 @@ const Start: React.FC = () => {
             <ExamPage finishExamCB={handleStopRecording} />
             :
             <div className='center'>
-              <button className='button' onClick={openFullscreen}>开始考试</button>
+              <button className='button' onClick={() => openFullscreen()}>开始考试</button>
             </div>
           }
         </>

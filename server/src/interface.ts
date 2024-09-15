@@ -9,7 +9,8 @@ export interface IUserOptions {
  * @description Exam-Service parameters
  */
 export interface IExamOptions {
-  uid: number;
+  uid?: number;
+  userId: number;
 }
 
 export interface IAnswerOptions {

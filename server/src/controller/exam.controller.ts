@@ -13,8 +13,8 @@ export class ExamController {
   examService: ExamService;
 
   @Get('/')
-  async getExam(@Query('uid') uid) {
-    const exam = await this.examService.getExam({ uid });
+  async getExam(@Query('userId') userId) {
+    const exam = await this.examService.getExam({ userId });
     return { success: true, message: 'OK', data: exam };
   }
 

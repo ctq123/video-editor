@@ -33,8 +33,11 @@ const questions: IQuestion[] = [
 @Provide()
 export class ExamService {
   async getExam(options: IExamOptions) {
+    // TODO: 为用户创建一份试卷（已存在则忽略）
+    // 绑定试卷内容
     return {
       uid: options.uid,
+      userId: options.userId,
       id: 23,
       timeLimit: 3600,
       questions: questions.map((item: IQuestion) => ({ ...item, answer: '' })),

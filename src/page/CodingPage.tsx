@@ -59,7 +59,7 @@ const CodingPage = forwardRef<CodingPageHandle, IProps>(({
   question, 
   submitSuccessCB
 }, ref) => {
-  const [code, setCode] = useState<string>('');
+  const [code, setCode] = useState<string>(`console.log('hello world!');`);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<string | null>(null);
   const extensions = [javascript({ jsx: true })];
@@ -135,7 +135,7 @@ const CodingPage = forwardRef<CodingPageHandle, IProps>(({
       </div>
       <div className="code-editor">
         <CodeMirror
-          value="console.log('hello world!');"
+          value={code}
           height="200px"
           theme={myTheme}
           extensions={extensions}

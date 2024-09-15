@@ -56,7 +56,9 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
 
     const fetchExamData = async () => {
         try {
-            const response = await http.get('/api/exam');
+            const response = await http.get('/api/exam', {
+                params: { userId: 1 },
+            });
             console.log('test fetch:', response.data);
             const { id, timeLimit, questions } = response.data || {};
             if (!id) {
