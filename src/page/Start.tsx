@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 import OnlineWrite from './OnlineWrite';
+import Draggable from '../components/Draggable';
 import CameraRecord from '../components/CameraRecord';
 import './Start.css'
 
@@ -58,7 +59,7 @@ const Start: React.FC = () => {
       console.log('页面不可见'); // 用户切换到了其他标签页或最小化了浏览器
       // proc
 
-      alert('用户切屏');
+      // alert('用户切屏');
     } else {
       console.log('页面可见'); // 用户回到当前标签页
     }
@@ -137,17 +138,27 @@ const Start: React.FC = () => {
     }
   }, [])
 
-
+  const margin = 10;
+  const width = 200; // 或自定义宽度
   return (
     <div className='container flex flex-column center'>
       <h1>在线笔试</h1>
-      <CameraRecord />
+
+      <Draggable
+        width={width}
+        height={150}
+        initialX={window.innerWidth - width - margin}
+        initialY={margin}
+        margin={margin}>
+        <CameraRecord />
+      </Draggable>
+      
       {isStart ?
         <OnlineWrite />
-        : 
+        :
         <div className='center'>
           <button className='button' onClick={openFullscreen}>开始考试</button>
-        </div> 
+        </div>
       }
     </div>
   )

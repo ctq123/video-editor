@@ -1,12 +1,15 @@
 .draggable {
   position: absolute;
-  width: 100px;
-  height: 100px;
   background-color: #3498db;
   color: white;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  border-radius: 8px;
   cursor: grab;
-  user-select: none;
+  user-select: none; /* 禁止文本选择 */
+}
+
+.draggable:active {
+  cursor: grabbing;
 }
