@@ -1,0 +1,16 @@
+/* CodingQuestion.css */
+.coding-question {
+  display: flex;
+}
+
+.question-description {
+  flex: 1;
+}
+
+.code-editor {
+  flex: 2;
+}
+
+.actions {
+  margin-top: 20px;
+}

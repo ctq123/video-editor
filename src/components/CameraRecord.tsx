@@ -1,82 +1,94 @@
-import React, { useState, useRef } from 'react';
-import './CameraRecord.css'; // 引入CSS文件
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import './CameraRecord.css';
 
-const CameraRecord: React.FC = () => {
-  const [isRecording, setIsRecording] = useState<boolean>(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [videoURL, setVideoURL] = useState<string | null>(null);
-  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
-  const videoRef = useRef<HTMLVideoElement>(null);
+interface CameraRecordProps {
+    videoWidth?: number;
+    videoHeight?: number;
+    onRecordingError?: () => void;
+    onRecordingComplete?: (blob: Blob, url: string) => void;
+}
 
-  // 获取用户的媒体流
-  const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
-    }
+export interface CameraRecordHandle {
+    startRecording: () => void;
+    stopRecording: () => void;
+}
 
-    const recorder = new MediaRecorder(stream);
-    recorder.ondataavailable = handleDataAvailable;
-    recorder.onstop = handleStop;
+const CameraRecord = forwardRef<CameraRecordHandle, CameraRecordProps>(({
+    videoWidth = 200,
+    videoHeight = 200,
+    onRecordingError,
+    onRecordingComplete
+}, ref) => {
+    // const [isRecording, setIsRecording] = useState<boolean>(false);
+    // const [videoURL, setVideoURL] = useState<string | null>(null);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
-    recorder.start();
-    setMediaRecorder(recorder);
-    setIsRecording(true);
-  };
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            setMediaStream(stream);
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                videoRef.current.play();
+            }
+            const mediaRecorder = new MediaRecorder(stream);
+            const chunks: Blob[] = [];
+            mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                // setVideoURL(url);
+                // setIsRecording(false);
 
-  // 处理录制的数据
-  const handleDataAvailable = (event: BlobEvent) => {
-    if (event.data.size > 0) {
-      setRecordedChunks((prev) => [...prev, event.data]);
-    }
-  };
+                // 调用外部函数来处理录制完成的 Blob 数据
+                if (onRecordingComplete) {
+                    onRecordingComplete(blob, url);
+                }
+            };
 
-  // 处理停止录制事件
-  const handleStop = () => {
-    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-    const url = URL.createObjectURL(blob);
-    setVideoURL(url);
-    setRecordedChunks([]);
-  };
+            mediaRecorder.start();
+            mediaRecorderRef.current = mediaRecorder;
+            // setIsRecording(true);
+        } catch (err) {
+            console.error('Error accessing media devices.', err);
+            if (onRecordingError) {
+                onRecordingError();
+            }
+        }
+    };
 
-  // 停止录制
-  const stopRecording = () => {
-    if (mediaRecorder) {
-      mediaRecorder.stop();
-      setIsRecording(false);
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach((track) => track.stop());
-      }
-    }
-  };
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
+        }
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => track.stop());
+            setMediaStream(null);
+        }
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+    };
 
-  // 下载录制的视频
-  const downloadRecording = () => {
-    if (videoURL) {
-      const a = document.createElement('a');
-      a.href = videoURL;
-      a.download = 'recording.webm';
-      a.click();
-    }
-  };
+    useImperativeHandle(ref, () => ({
+        startRecording,
+        stopRecording
+    }));
 
-  return (
-    <div className="video-container">
-      <video ref={videoRef} autoPlay className="video-preview"></video>
-      <div className="button-container">
-        <button onClick={startRecording} disabled={isRecording}>
-          开始录制
-        </button>
-        <button onClick={stopRecording} disabled={!isRecording}>
-          停止录制
-        </button>
-        <button onClick={downloadRecording} disabled={!videoURL}>
-          下载录制
-        </button>
-      </div>
-    </div>
-  );
-};
+    return (
+        <div className="camera-record">
+            <video
+                ref={videoRef}
+                width={videoWidth}
+                height={videoHeight}
+                autoPlay
+                muted
+                className="camera-record__video"
+            />
+        </div>
+    );
+});
 
 export default CameraRecord;
