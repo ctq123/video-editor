@@ -35,4 +35,18 @@ export class ExamController {
     const result = await this.examService.submitCode(exam);
     return { success: true, message: 'OK', data: result };
   }
+
+  @Post('/user-action')
+  async updateUserExamAction(@Body() userAction) {
+    // TODO: 处理用户考试行为
+    console.log(userAction);
+    return { success: true, message: 'OK', data: true };
+  }
+
+  @Post('/upload-vedio')
+  async updateUserExamVedio(@Body() vedio) {
+    // TODO: 上传监控录像，分析用户考试行为
+    console.log(vedio);
+    return { success: true, message: 'OK', data: true };
+  }
 }

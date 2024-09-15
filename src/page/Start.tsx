@@ -4,12 +4,40 @@ import ExamPage from './ExamPage';
 import Draggable from '../components/Draggable';
 import CameraRecord, { CameraRecordHandle } from '../components/CameraRecord';
 import debounce from 'lodash/debounce';
+import http from '../utils/http';
 import './Start.css'
+
+/** 用户考试行为 */
+interface UserExamAction {
+  /** 考试中断次数 */
+  examInterruptCount: number;
+  /** 切屏次数 */
+  screenChangeCount: number;
+  /** 拷贝次数 */
+  copyCount: number;
+  /** 剪切次数 */
+  cutCount: number;
+  /** 粘贴次数 */
+  pasteCount: number;
+  /** 鼠标离开窗口次数 */
+  mouseLeaveCount: number;
+  /** 鼠标失去焦点次数 */
+  mouseBlurCount: number;
+}
 
 const Start: React.FC = () => {
   const [isStart, setIsStart] = useState(false);
   const [showRecorder, setShowRecorder] = useState<boolean>(false); // 是否显示录制器
   const cameraRecordRef = useRef<CameraRecordHandle | null>(null);
+  const [userAction, setUserAction] = useState<UserExamAction>({
+    examInterruptCount: 0,
+    screenChangeCount: 0,
+    copyCount: 0,
+    cutCount: 0,
+    pasteCount: 0,
+    mouseLeaveCount: 0,
+    mouseBlurCount: 0,
+  }); // 录制状态
 
   useEffect(() => {
     // 监听全屏
@@ -120,6 +148,12 @@ const Start: React.FC = () => {
       setIsStart(true);
     } else {
       console.log('退出全屏模式');
+      if (isStart) {
+        setUserAction((pre) => ({
+          ...pre,
+          examInterruptCount: pre.examInterruptCount + 1,
+        }))
+      }
       setIsStart(false);
     }
   }
@@ -130,14 +164,20 @@ const Start: React.FC = () => {
     if (isFullScreen() && window.innerHeight !== screen.height) {
       console.log('退出全屏模式1');
       setIsStart(false);
+      setUserAction((pre) => ({
+        ...pre,
+        examInterruptCount: pre.examInterruptCount + 1,
+      }))
     }
   }
 
   const handleSwitchScreen = () => {
     if (document.hidden) {
       console.log('页面不可见'); // 用户切换到了其他标签页或最小化了浏览器
-      // proc
-
+      setUserAction((pre) => ({
+        ...pre,
+        screenChangeCount: pre.screenChangeCount + 1,
+      }))
       // alert('用户切屏');
     } else {
       console.log('页面可见'); // 用户回到当前标签页
@@ -152,7 +192,10 @@ const Start: React.FC = () => {
     // console.log('拷贝的内容:', copiedData);
     console.log('拷贝的内容:', selection?.toString());
     // proc
-
+    setUserAction((pre) => ({
+      ...pre,
+      copyCount: pre.copyCount + 1,
+    }))
     alert('拷贝内容：' + selection?.toString());
   }
 
@@ -161,6 +204,10 @@ const Start: React.FC = () => {
     // 获取剪切的内容（如果需要）
     const cutData = event?.clipboardData?.getData('text');
     console.log('剪切的内容:', cutData);
+    setUserAction((pre) => ({
+      ...pre,
+      cutCount: pre.cutCount + 1,
+    }))
   }
 
   const handlePaste = (event: ClipboardEvent) => {
@@ -168,14 +215,26 @@ const Start: React.FC = () => {
     // 获取粘贴的内容
     const pastedData = event?.clipboardData?.getData('text');
     console.log('粘贴的内容:', pastedData);
+    setUserAction((pre) => ({
+      ...pre,
+      pasteCount: pre.pasteCount + 1,
+    }))
   }
 
   const handleMouseleave = () => {
     console.log('鼠标离开了视口');
+    setUserAction((pre) => ({
+      ...pre,
+      mouseLeaveCount: pre.mouseLeaveCount + 1,
+    }))
   }
 
   const handleBlur = () => {
     console.log('窗口失去焦点');
+    setUserAction((pre) => ({
+      ...pre,
+      mouseBlurCount: pre.mouseBlurCount + 1,
+    }))
   }
 
   const handleRecordingStart = () => {
@@ -193,7 +252,7 @@ const Start: React.FC = () => {
     setShowRecorder(false);
   };
 
-  const handleRecordingComplete = (blob: Blob, url: string) => {
+  const handleRecordingComplete = async (blob: Blob, url: string) => {
     // 录制完成，处理blob对象，关闭录制器
     // setShowRecorder(false);
 
@@ -201,14 +260,11 @@ const Start: React.FC = () => {
     const formData = new FormData();
     formData.append('video', blob, 'recording.webm');
 
-    // fetch('/upload-endpoint', {
-    //     method: 'POST',
-    //     body: formData,
-    // }).then(response => {
-    //     console.log('Upload success:', response);
-    // }).catch(error => {
-    //     console.error('Upload error:', error);
-    // });
+    // try {
+    //   await http.post('/api/exam/upload-vedio', formData);
+    // } catch (error) {
+    //   console.error('Error:', error);
+    // }
 
     // 自动下载录制文件
     const a = document.createElement('a');
@@ -217,12 +273,29 @@ const Start: React.FC = () => {
     a.click();
   };
 
-  const handleStopRecording = () => {
+  const handleSubmitUserAction = async () => {
+    // 处理用户行为，例如发送到服务器或执行其他操作
+    // console.log('User action:', userAction);
+    try {
+      const formData = {
+        userId: 1, // TODO: 获取用户ID
+        userAction: userAction,
+      }
+      await http.post('/api/exam/user-action', formData);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  const handleFinishCB = () => {
       if (cameraRecordRef.current) {
           cameraRecordRef.current.stopRecording();
       }
       // 关闭录制器
       setShowRecorder(false);
+
+      // 上传用户行为
+      handleSubmitUserAction();
   };
 
 
@@ -263,7 +336,7 @@ const Start: React.FC = () => {
 
           {/* 在线笔试页面 */}
           {isStart ?
-            <ExamPage finishExamCB={handleStopRecording} />
+            <ExamPage finishExamCB={handleFinishCB} />
             :
             <div className='center'>
               <button className='button' onClick={() => openFullscreen()}>开始考试</button>
