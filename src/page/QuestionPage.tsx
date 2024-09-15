@@ -79,10 +79,10 @@ const QuestionPage = forwardRef<QuestionPageHandle, IProps>(({
 
   return (
     <>
-      {questions.map(question => {
+      {questions.map((question, index) => {
         return (
           <div key={question.id} className="question">
-            <h2>{question.questionText}</h2>
+            <pre>{index + 1}. {question.questionText}</pre>
             {question.type === 'choice' && (
               <div>
                 {question.options?.map(option => (
@@ -128,7 +128,7 @@ const QuestionPage = forwardRef<QuestionPageHandle, IProps>(({
       {
         questions.length > 0 && 
         <button className='button' onClick={() => handleSubmit()} disabled={isSubmitting}>
-          {isSubmitting ? 'Submitting...' : 'Submit Exam'}
+          {'提交答案'}
         </button>
       }
       

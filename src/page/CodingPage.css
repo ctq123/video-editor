@@ -1,16 +1,26 @@
 /* CodingQuestion.css */
 .coding-question {
   display: flex;
+  width: 100vw;
 }
 
 .question-description {
-  flex: 1;
+  width: 30%;
+  margin-right: 30px;
 }
 
 .code-editor {
-  flex: 2;
+  width: 60%;
 }
 
 .actions {
+  margin-top: 20px;
+}
+
+.button + .button {
+  margin-left: 10px;
+}
+
+.result-actions {
   margin-top: 20px;
 }

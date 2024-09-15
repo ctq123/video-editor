@@ -10,27 +10,66 @@ const questions: IQuestion[] = [
   {
     id: 1,
     type: 'choice',
-    questionText: 'What is 2 + 2?',
-    options: ['3', '4', '5'],
-    answer: '4',
+    questionText: `Which hook is used to manage state in a functional React component?
+    `,
+    options: ['useEffect', 'useContext', 'useState', 'useReducer'],
+    answer: 'useReducer',
   },
   {
     id: 2,
     type: 'multiple-choice',
-    questionText: 'Which of the following are fruits?',
-    options: ['Apple', 'Carrot', 'Banana'],
-    answer: 'Carrot',
+    questionText: `以下代码，执行后输出的会是什么?
+      function fn(n, o) {
+        console.log(o);
+
+        return {
+          fn(m) {
+            return fn(m, n);
+          },
+        };
+      }
+
+      var b = fn(0).fn(1).fn(2).fn(3);`,
+    options: ['0', '1', '2', '3'],
+    answer: '0 1 2',
   },
   {
     id: 3,
     type: 'short-answer',
-    questionText: 'What is your name?',
-    answer: 'Carrot',
+    questionText: `What is the output of the following code?
+      function Foo() {
+        function a() {
+          console.log(1);
+        }
+
+        this.a = function () {
+          console.log(2);
+        };
+      }
+
+      Foo.prototype.a = function () {
+        console.log(3);
+      };
+
+      Foo.a = function () {
+        console.log(4);
+      };
+
+      Foo.a();
+      let foo = new Foo();
+      foo.a();
+      Foo.a();`,
+    answer: '4 2 4',
   },
   {
     id: 4,
     type: 'coding',
-    questionText: 'Write a function to reverse a string.',
+    questionText: `
+      给出一个组乱序的数字，其中元素有正有负，求三个数的最大乘积.
+      
+      如：[-10, -10, 1, 3, 2]
+      输出：300
+    `,
     answer: '',
   },
 ];

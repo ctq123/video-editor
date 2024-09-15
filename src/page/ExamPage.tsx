@@ -119,7 +119,7 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
 
     return (
         <div>
-            <div>考试剩余时间: {formatTime(timeLeft)}</div>
+            <div className='flex center mb-2'>考试剩余时间: {formatTime(timeLeft)}</div>
             { !showCoding && <QuestionPage ref={questionRef} examId={examId} questions={questions} submitSuccessCB={handleQustionSubmitCB} /> }
             { showCoding && <CodingPage ref={codingRef} examId={examId} question={codingQuestion} submitSuccessCB={handleQustionSubmitCB} /> }
         </div>

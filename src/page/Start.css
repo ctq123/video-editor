@@ -1,7 +1,8 @@
 .container {
-  height: 100vh; /* 使 body 高度为视口高度 */
+  min-height: 100vh; /* 使 body 高度为视口高度 */
   width: 100vw;
   margin: 0 auto; /* 去掉默认的 margin */
+  padding: 20px;
   background-color: #f0f0f0; /* 设置背景色 */
 }
 
@@ -16,6 +17,10 @@
 .center {
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
+}
+
+.mb-2 {
+  margin-bottom: 2rem;
 }
 
 .button {

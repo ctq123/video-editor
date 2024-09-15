@@ -129,25 +129,29 @@ const CodingPage = forwardRef<CodingPageHandle, IProps>(({
   }, []);
 
   return (
-    <div className="coding-question">
-      <div className="question-description">
-        <h2>{question?.questionText}</h2>
-      </div>
-      <div className="code-editor">
-        <CodeMirror
-          value={code}
-          height="200px"
-          theme={myTheme}
-          extensions={extensions}
-          onChange={onChange}
-        />
-      </div>
-      <div className="actions">
-        <button className='button' onClick={handleTest}>Test Code</button>
-        <button className='button' onClick={() => handleSubmit()} disabled={isSubmitting}>
-          {isSubmitting ? 'Submitting...' : 'Submit Code'}
-        </button>
-        {testResult && <div>Test Result: {testResult}</div>}
+    <div>
+      <div className="coding-question">
+        <div className="question-description">
+          <pre>{question?.questionText}</pre>
+        </div>
+        <div className="code-editor">
+          <CodeMirror
+            value={code}
+            height="600px"
+            theme={myTheme}
+            extensions={extensions}
+            onChange={onChange}
+          />
+
+          <div className="actions">
+            <button className='button' onClick={handleTest}>运行用例</button>
+            <button className='button' onClick={() => handleSubmit()} disabled={isSubmitting}>
+              {'提交代码'}
+            </button>
+          </div>
+
+          { testResult && <div className='result-actions'>运行结果：{testResult}</div> }
+        </div>
       </div>
     </div>
   );
