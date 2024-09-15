@@ -1,50 +1,53 @@
-# React + TypeScript + Vite
+# 项目介绍
+这是一个在线笔试系统，用于企业进行在线笔试。系统包括以下功能：
+- 在线笔试功能，包括题目展示、答题、提交答案
+- 防作弊功能，包括切屏、拷贝、粘贴、多屏识别、监控录屏分析等
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 环境要求
+- Node.js 20.0.0 或更高版本
 
-Currently, two official plugins are available:
+## 技术栈
+前端：React + TypeScript + Vite + Axios
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+后端：Node.js
 
-## Expanding the ESLint configuration
+## 项目启动
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+yarn
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 启动后端
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+```bash
+cd server
+yarn dev
+```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+### 启动前端
+
+```bash
+cd ..
+yarn dev
+```
+
+
+## 项目结构
+
+```bash
+├── public
+├── server
+├── src
+│   ├── assets
+│   ├── components
+│   ├── page
+│   ├── utils
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── .gitignore
+├── index.html
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
