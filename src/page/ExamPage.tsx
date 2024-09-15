@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import CodingPage, { CodingPageHandle} from './CodingPage';
 import QuestionPage, { QuestionPageHandle} from './QuestionPage';
+import http from '../utils/http';
 
 interface Question {
     id: string;
@@ -10,7 +10,12 @@ interface Question {
     options?: string[]; // For choice and multiple-choice questions
 }
 
-const ExamPage: React.FC = () => {
+interface IProps {
+    finishExamCB: () => void;
+}
+
+const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
+    const [examId, setExamId] = useState<number>(0);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [codingQuestions, setCodingQuestions] = useState<Question[]>([]);
     const [codingQuestion, setCodingQuestion] = useState<Question | null>(null);
@@ -20,8 +25,7 @@ const ExamPage: React.FC = () => {
     const questionRef = useRef<QuestionPageHandle | null>(null);
 
     useEffect(() => {
-        fetchQuestions();
-        fetchExamTime();
+        fetchExamData();
 
         // Set up timer
         const timer = setInterval(() => {
@@ -50,26 +54,21 @@ const ExamPage: React.FC = () => {
         return () => clearInterval(timer);
     }, []);
 
-    const fetchQuestions = async () => {
+    const fetchExamData = async () => {
         try {
-            const response = await axios.get('/api/exam/questions');
-            const data = response.data;
-            if (!Array.isArray(data)) return;
-            setQuestions(data.filter((question: Question) => question.type !== 'coding'));
-            setCodingQuestions(data.filter((question: Question) => question.type === 'coding'));
+            const response = await http.get('/api/exam');
+            console.log('test fetch:', response.data);
+            const { id, timeLimit, questions } = response.data || {};
+            if (!id) {
+                console.error('Exam ID not found in response');
+                return;
+            }
+            setExamId(id);
+            setTimeLeft(timeLimit);
+            setQuestions(questions.filter((question: Question) => question.type !== 'coding'));
+            setCodingQuestions(questions.filter((question: Question) => question.type === 'coding'));
         } catch (error) {
             console.error('Error fetching questions:', error);
-        }
-    };
-
-    const fetchExamTime = async () => {
-        try {
-            const response = await axios.get('/api/exam/time');
-            const data = response.data;
-            if (!Number.isInteger(data)) return;
-            setTimeLeft(data);
-        } catch (error) {
-            console.error('Error fetching exam time:', error);
         }
     };
 
@@ -95,13 +94,17 @@ const ExamPage: React.FC = () => {
         // 结束考试
         console.log('Exam finished');
         // alert('考试结束，感谢您的参与！');
+        // TODO: 跳转到结果页面
+        if (finishExamCB) {
+            finishExamCB();
+        }
     }
 
     return (
         <div>
             <div>Time Left: {formatTime(timeLeft)}</div>
-            { !showCoding && <QuestionPage ref={questionRef} questions={questions} submitSuccessCB={handleQustionSubmitCB} /> }
-            { showCoding && <CodingPage ref={codingRef} question={codingQuestion} submitSuccessCB={handleQustionSubmitCB} /> }
+            { !showCoding && <QuestionPage ref={questionRef} examId={examId} questions={questions} submitSuccessCB={handleQustionSubmitCB} /> }
+            { showCoding && <CodingPage ref={codingRef} examId={examId} question={codingQuestion} submitSuccessCB={handleQustionSubmitCB} /> }
         </div>
     );
 };

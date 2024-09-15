@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import axios from 'axios';
+import http from '../utils/http';
 import './QuestionPage.css';
 
 interface Question {
@@ -10,6 +10,7 @@ interface Question {
 }
 
 interface IProps {
+  examId: number;
   questions: Question[];
   submitSuccessCB?: () => void;
 }
@@ -19,7 +20,9 @@ export interface QuestionPageHandle {
 }
 
 const QuestionPage = forwardRef<QuestionPageHandle, IProps>(({
-  questions, submitSuccessCB
+  examId,
+  questions, 
+  submitSuccessCB
 }, ref) => {
   const [answers, setAnswers] = useState<{ [key: string]: string | string[] }>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -50,7 +53,12 @@ const QuestionPage = forwardRef<QuestionPageHandle, IProps>(({
   const handleSubmit = async (isAutoSubmit = false) => {
     setIsSubmitting(true);
     try {
-      await axios.post('/api/exam/submit', { answers });
+      const answerList = Object.entries(answers).map(([questionId, answer]) => ({ questionId, answer }));
+      await http.post('/api/exam/submit', { 
+        userId: 1, // TODO: 获取用户ID,
+        examId, 
+        answers: answerList 
+      });
       // alert('successfully!');
       if (!isAutoSubmit && submitSuccessCB) {
         submitSuccessCB();
@@ -117,9 +125,13 @@ const QuestionPage = forwardRef<QuestionPageHandle, IProps>(({
           </div>
         );
       })}
-      <button onClick={() => handleSubmit()} disabled={isSubmitting}>
-        {isSubmitting ? 'Submitting...' : 'Submit Exam'}
-      </button>
+      {
+        questions.length > 0 && 
+        <button className='button' onClick={() => handleSubmit()} disabled={isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Submit Exam'}
+        </button>
+      }
+      
     </>
   );
 });

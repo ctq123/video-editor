@@ -1,9 +1,9 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import axios from 'axios';
 import CodeMirror from '@uiw/react-codemirror';
 import { createTheme } from '@uiw/codemirror-themes';
 import { javascript } from '@codemirror/lang-javascript';
 import { tags as t } from '@lezer/highlight';
+import http from '../utils/http';
 import './CodingPage.css';
 
 interface Question {
@@ -14,6 +14,7 @@ interface Question {
 }
 
 interface IProps {
+  examId: number;
   question: Question | null;
   submitSuccessCB?: () => void;
 }
@@ -54,7 +55,9 @@ const myTheme = createTheme({
 });
 
 const CodingPage = forwardRef<CodingPageHandle, IProps>(({
-  question, submitSuccessCB
+  examId,
+  question, 
+  submitSuccessCB
 }, ref) => {
   const [code, setCode] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -67,8 +70,20 @@ const CodingPage = forwardRef<CodingPageHandle, IProps>(({
 
   /** 运行测试用例 */
   const handleTest = async () => {
+    if (!question || !question.id || isSubmitting || !code) return;
+
     try {
-      const response = await axios.post('/api/exam/test', { code });
+      const formData = {
+        userId: 1, // TODO: 获取用户ID
+        examId,
+        answers: [
+          {
+            questionId: question.id,
+            answer: code,
+          }
+        ]
+      }
+      const response = await http.post('/api/exam/test', formData);
       setTestResult(response.data.result);
     } catch (error) {
       console.error('Error testing code:', error);
@@ -81,7 +96,18 @@ const CodingPage = forwardRef<CodingPageHandle, IProps>(({
 
     setIsSubmitting(true);
     try {
-      await axios.post('/api/exam/submit-coding', { questionId: question.id, answer: code });
+      const formData = {
+        userId: 1, // TODO: 获取用户ID,
+        examId,
+        answers: [
+          {
+            questionId: question.id,
+            answer: code,
+          }
+        ]
+      };
+
+      await http.post('/api/exam/submit-coding', formData);
       // alert('Code submitted successfully!');
       if (!isAutoSubmit && submitSuccessCB) {
         submitSuccessCB();
@@ -117,8 +143,8 @@ const CodingPage = forwardRef<CodingPageHandle, IProps>(({
         />
       </div>
       <div className="actions">
-        <button onClick={handleTest}>Test Code</button>
-        <button onClick={() => handleSubmit()} disabled={isSubmitting}>
+        <button className='button' onClick={handleTest}>Test Code</button>
+        <button className='button' onClick={() => handleSubmit()} disabled={isSubmitting}>
           {isSubmitting ? 'Submitting...' : 'Submit Code'}
         </button>
         {testResult && <div>Test Result: {testResult}</div>}

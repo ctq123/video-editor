@@ -31,7 +31,7 @@ const Start: React.FC = () => {
     document.addEventListener('mouseleave', handleMouseleave);
     // 监听窗口失去焦点
     document.addEventListener('blur', handleBlur);
-
+    
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
@@ -142,9 +142,12 @@ const Start: React.FC = () => {
 
   const handleRecordingStart = () => {
     setShowRecorder(true);
-    if (cameraRecordRef.current) {
-      cameraRecordRef.current.startRecording();
-    }
+    
+    setTimeout(() => {
+      if (cameraRecordRef.current) {
+        cameraRecordRef.current.startRecording();
+      }
+    }, 100);
   };
 
   const handleRecordingError = () => {
@@ -222,7 +225,7 @@ const Start: React.FC = () => {
 
           {/* 在线笔试页面 */}
           {isStart ?
-            <ExamPage />
+            <ExamPage finishExamCB={handleStopRecording} />
             :
             <div className='center'>
               <button className='button' onClick={openFullscreen}>开始考试</button>

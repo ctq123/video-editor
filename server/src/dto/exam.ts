@@ -5,6 +5,9 @@ export class ExamDTO {
   @Rule(RuleType.number().required())
   examId: number;
 
+  @Rule(RuleType.number().required())
+  userId: number;
+
   @Rule(RuleType.array().required())
   answers: IAnswer[];
 }

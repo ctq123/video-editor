@@ -35,7 +35,7 @@ export class ExamService {
   async getExam(options: IExamOptions) {
     return {
       uid: options.uid,
-      id: 1,
+      id: 23,
       timeLimit: 3600,
       questions: questions.map((item: IQuestion) => ({ ...item, answer: '' })),
     };

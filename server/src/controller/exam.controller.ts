@@ -13,12 +13,6 @@ export class ExamController {
   examService: ExamService;
 
   @Get('/')
-  async getHello(): Promise<string> {
-    // 这里是 http 的返回，可以直接返回字符串，数字，JSON，Buffer 等
-    return 'Hello Weather!';
-  }
-
-  @Get('/get')
   async getExam(@Query('uid') uid) {
     const exam = await this.examService.getExam({ uid });
     return { success: true, message: 'OK', data: exam };
