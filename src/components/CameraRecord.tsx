@@ -1,75 +1,82 @@
-import { useState, useEffect, useRef } from 'react'
-import './CameraRecord.css'
+import React, { useState, useRef } from 'react';
+import './CameraRecord.css'; // 引入CSS文件
 
 const CameraRecord: React.FC = () => {
-  const [startDisabled, setStartDisabled] = useState(false);
-  const [stopDisabled, setStopDisabled] = useState(true);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const downloadLinkRef = useRef<HTMLAnchorElement | null>(null);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [videoURL, setVideoURL] = useState<string | null>(null);
+  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      return stream;
-    } catch (error) {
-      console.error('无法访问摄像头:', error);
+  // 获取用户的媒体流
+  const startRecording = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream;
     }
-  }
 
-  const handleStart = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.start();
-      setStartDisabled(true);
-      setStopDisabled(false);
+    const recorder = new MediaRecorder(stream);
+    recorder.ondataavailable = handleDataAvailable;
+    recorder.onstop = handleStop;
+
+    recorder.start();
+    setMediaRecorder(recorder);
+    setIsRecording(true);
+  };
+
+  // 处理录制的数据
+  const handleDataAvailable = (event: BlobEvent) => {
+    if (event.data.size > 0) {
+      setRecordedChunks((prev) => [...prev, event.data]);
     }
-  }
+  };
 
+  // 处理停止录制事件
   const handleStop = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setStartDisabled(false);
-      setStopDisabled(true);
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    setVideoURL(url);
+    setRecordedChunks([]);
+  };
+
+  // 停止录制
+  const stopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach((track) => track.stop());
+      }
     }
-  }
+  };
 
-  const startRecording = () => {
-    startCamera().then((stream: MediaStream | undefined) => {
-      if (!stream) return;
-      mediaRecorderRef.current = new MediaRecorder(stream);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const chunks: any = [];
-  
-      mediaRecorderRef.current.ondataavailable = event => {
-        chunks.push(event.data);
-      };
-  
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        if (!downloadLinkRef.current) return;
-        downloadLinkRef.current.href = url;
-        downloadLinkRef.current.style.display = 'block';
-      };
-    });
-  }
-
-  useEffect(() => {
-    startRecording();
-  }, []);
+  // 下载录制的视频
+  const downloadRecording = () => {
+    if (videoURL) {
+      const a = document.createElement('a');
+      a.href = videoURL;
+      a.download = 'recording.webm';
+      a.click();
+    }
+  };
 
   return (
-    <div className='camera-record'>
-      <video id="video" ref={videoRef} autoPlay playsInline></video>
-      <button className='button' onClick={handleStart} disabled={startDisabled}>开始录制</button>
-      <button className='button' onClick={handleStop} disabled={stopDisabled}>停止录制</button>
-      <a ref={downloadLinkRef} download="recording.webm">下载录制</a>
+    <div className="video-container">
+      <video ref={videoRef} autoPlay className="video-preview"></video>
+      <div className="button-container">
+        <button onClick={startRecording} disabled={isRecording}>
+          开始录制
+        </button>
+        <button onClick={stopRecording} disabled={!isRecording}>
+          停止录制
+        </button>
+        <button onClick={downloadRecording} disabled={!videoURL}>
+          下载录制
+        </button>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default CameraRecord;
-
