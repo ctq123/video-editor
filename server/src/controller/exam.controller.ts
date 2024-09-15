@@ -36,6 +36,12 @@ export class ExamController {
     return { success: true, message: 'OK', data: result };
   }
 
+  @Post('/time')
+  async updateLimitTime(@Body() exam) {
+    const result = await this.examService.updateLimitTime(exam);
+    return { success: true, message: 'OK', data: result };
+  }
+
   @Post('/user-action')
   async updateUserExamAction(@Body() userAction) {
     // TODO: 处理用户考试行为

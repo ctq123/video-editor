@@ -8,7 +8,7 @@ export interface IUserOptions {
 /**
  * @description Exam-Service parameters
  */
-export interface IExamOptions {
+export interface IExamGetOptions {
   uid?: number;
   userId: number;
 }
@@ -24,6 +24,11 @@ export interface IExam {
   description: string;
   timeLimit: number;
   questions: IQuestion[];
+}
+
+export interface IExamOptions extends IExam {
+  uid?: number;
+  userId: number;
 }
 
 export interface IQuestion {

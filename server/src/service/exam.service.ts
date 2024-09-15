@@ -1,5 +1,10 @@
 import { Provide } from '@midwayjs/core';
-import { IExamOptions, IAnswerOptions, IQuestion } from '../interface';
+import {
+  IExamGetOptions,
+  IAnswerOptions,
+  IQuestion,
+  IExamOptions,
+} from '../interface';
 
 const questions: IQuestion[] = [
   {
@@ -32,16 +37,36 @@ const questions: IQuestion[] = [
 
 @Provide()
 export class ExamService {
-  async getExam(options: IExamOptions) {
+  async getExam(options: IExamGetOptions) {
     // TODO: 为用户创建一份试卷（已存在则忽略）
     // 绑定试卷内容
     return {
-      uid: options.uid,
       userId: options.userId,
       id: 23,
       timeLimit: 3600,
+      name: 'Test Exam',
+      description: 'This is a test exam',
       questions: questions.map((item: IQuestion) => ({ ...item, answer: '' })),
     };
+  }
+
+  async update(options: IExamOptions) {
+    // TODO: Save the code to the database
+    // 更新考试数据
+    return {
+      examId: options.id,
+    };
+  }
+
+  async updateLimitTime(options: IExamOptions) {
+    // TODO: Save the code to the database
+    // 更新考试数据
+    const exam = await this.getExam(options);
+    // 更新数据
+    exam.timeLimit = options.timeLimit;
+    console.log(exam);
+    const result = await this.update(exam);
+    return result;
   }
 
   async updateAnswer(options: IAnswerOptions) {

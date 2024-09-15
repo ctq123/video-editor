@@ -23,6 +23,7 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
     const [timeLeft, setTimeLeft] = useState<number>(3600); // Time in seconds (e.g., 1 hour)
     const codingRef = useRef<CodingPageHandle | null>(null);
     const questionRef = useRef<QuestionPageHandle | null>(null);
+    const timeRef = useRef<number>(3600);
 
     useEffect(() => {
         fetchExamData();
@@ -47,11 +48,15 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
                     
                     return 0;
                 }
+                timeRef.current = prevTime - 1;
                 return prevTime - 1;
             });
         }, 1000);
 
-        return () => clearInterval(timer);
+        return () => {
+            updateServerLimitTime();
+            clearInterval(timer);
+        };
     }, []);
 
     const fetchExamData = async () => {
@@ -67,12 +72,22 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
             }
             setExamId(id);
             setTimeLeft(timeLimit);
+            timeRef.current = timeLimit;
             setQuestions(questions.filter((question: Question) => question.type !== 'coding'));
             setCodingQuestions(questions.filter((question: Question) => question.type === 'coding'));
         } catch (error) {
             console.error('Error fetching questions:', error);
         }
     };
+
+    const updateServerLimitTime = async () => {
+        try {
+            console.log('test update:', examId, timeRef.current);
+            await http.post(`/api/exam/time`, { examId, userId: 1, timeLimit: timeRef.current });
+        } catch (error) {
+            console.error('Error updating server time limit:', error);
+        }
+    }
 
     const formatTime = (seconds: number) => {
         const minutes = Math.floor(seconds / 60);
@@ -104,7 +119,7 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
 
     return (
         <div>
-            <div>Time Left: {formatTime(timeLeft)}</div>
+            <div>考试剩余时间: {formatTime(timeLeft)}</div>
             { !showCoding && <QuestionPage ref={questionRef} examId={examId} questions={questions} submitSuccessCB={handleQustionSubmitCB} /> }
             { showCoding && <CodingPage ref={codingRef} examId={examId} question={codingQuestion} submitSuccessCB={handleQustionSubmitCB} /> }
         </div>
