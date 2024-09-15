@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 import OnlineWrite from './OnlineWrite';
+import CameraRecord from '../components/CameraRecord';
 import './Start.css'
 
 const Start: React.FC = () => {
@@ -20,6 +21,8 @@ const Start: React.FC = () => {
     } else if ((elem as any).msRequestFullscreen) {
       // IE/Edge
       (elem as any).msRequestFullscreen();
+    } else {
+      alert('您的浏览器不支持全屏模式，请使用其他浏览器或手动全屏');
     }
   };
 
@@ -31,6 +34,7 @@ const Start: React.FC = () => {
       (document as any).msFullscreenElement        // 对应 IE/Edge 浏览器
     ) {
       console.log('进入全屏');
+      setIsStart(true);
     } else {
       console.log('退出全屏');
       // alert('确认退出考试？');
@@ -135,8 +139,9 @@ const Start: React.FC = () => {
 
 
   return (
-    <div className='container'>
+    <div className='container flex flex-column center'>
       <h1>在线笔试</h1>
+      <CameraRecord />
       {isStart ?
         <OnlineWrite />
         : 

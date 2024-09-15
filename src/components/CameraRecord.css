@@ -1,0 +1,12 @@
+.camera-record {
+  margin-bottom: 20px;
+  
+}
+.result {
+  margin-top: 20px;
+  font-weight: bold;
+  color: green;
+}
+.error {
+  color: red;
+}

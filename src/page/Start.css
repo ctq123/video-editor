@@ -5,8 +5,15 @@
   background-color: #f0f0f0; /* 设置背景色 */
 }
 
-.center {
+.flex {
   display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.center {
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
 }

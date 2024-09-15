@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-// import './App.css'
+import './CameraRecord.css'
 
 const CameraRecord: React.FC = () => {
   const [startDisabled, setStartDisabled] = useState(false);
@@ -62,12 +62,12 @@ const CameraRecord: React.FC = () => {
   }, []);
 
   return (
-    <>
+    <div className='camera-record'>
       <video id="video" ref={videoRef} autoPlay playsInline></video>
-      <button onClick={handleStart} disabled={startDisabled}>开始录制</button>
-      <button onClick={handleStop} disabled={stopDisabled}>停止录制</button>
+      <button className='button' onClick={handleStart} disabled={startDisabled}>开始录制</button>
+      <button className='button' onClick={handleStop} disabled={stopDisabled}>停止录制</button>
       <a ref={downloadLinkRef} download="recording.webm">下载录制</a>
-    </>
+    </div>
   )
 }
 
