@@ -48,11 +48,4 @@ export class ExamController {
     console.log(userAction);
     return { success: true, message: 'OK', data: true };
   }
-
-  @Post('/upload-vedio')
-  async updateUserExamVedio(@Body() vedio) {
-    // TODO: 上传监控录像，分析用户考试行为
-    console.log(vedio);
-    return { success: true, message: 'OK', data: true };
-  }
 }

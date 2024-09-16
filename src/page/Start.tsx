@@ -5,6 +5,7 @@ import Draggable from '../components/Draggable';
 import CameraRecord, { CameraRecordHandle } from '../components/CameraRecord';
 import debounce from 'lodash/debounce';
 import http from '../utils/http';
+import { AxiosRequestConfig } from 'axios';
 import './Start.css'
 
 /** 用户考试行为 */
@@ -87,7 +88,7 @@ const Start: React.FC = () => {
   const openFullscreen = () => {
     try {
       const elem = document.documentElement as HTMLElement; // 选择要全屏的元素
-  
+
       // 退出全屏模式（如果已经在全屏模式中）
       if (isFullScreen()) {
         if (document.exitFullscreen) {
@@ -119,7 +120,7 @@ const Start: React.FC = () => {
       console.error(e);
     }
   };
-  
+
   const requestFullscreen = (elem: HTMLElement) => {
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
@@ -133,17 +134,17 @@ const Start: React.FC = () => {
       alert('您的浏览器不支持全屏模式，请使用其他浏览器或手动全屏');
     }
   };
-  
+
 
   const isFullScreen = () => {
-    return document.fullscreenElement || 
-      (document as any).mozFullScreenElement || 
-      (document as any).webkitFullscreenElement || 
-      (document as any).msFullscreenElement 
+    return document.fullscreenElement ||
+      (document as any).mozFullScreenElement ||
+      (document as any).webkitFullscreenElement ||
+      (document as any).msFullscreenElement
   }
 
   const handleFullscreenChange = () => {
-    if (isFullScreen()) {      
+    if (isFullScreen()) {
       console.log('进入全屏模式');
       setIsStart(true);
     } else {
@@ -239,7 +240,7 @@ const Start: React.FC = () => {
 
   const handleRecordingStart = () => {
     setShowRecorder(true);
-    
+
     setTimeout(() => {
       if (cameraRecordRef.current) {
         cameraRecordRef.current.startRecording();
@@ -258,13 +259,22 @@ const Start: React.FC = () => {
 
     // 上传录制数据到服务器
     const formData = new FormData();
-    formData.append('video', blob, 'recording.webm');
+    formData.append('file', blob, 'recording.webm');
+    formData.append('userId', '1');
 
-    // try {
-    //   await http.post('/api/exam/upload-vedio', formData);
-    // } catch (error) {
-    //   console.error('Error:', error);
-    // }
+    // 配置请求
+    const config: AxiosRequestConfig = {
+      headers: {
+        'Content-Type': 'multipart/form-data' // 通常 axios 会自动设置
+      },
+    };
+
+    try {
+      const result = await http.post('/api/upload/video', formData, config);
+      console.log('上传成功:', result);
+    } catch (error) {
+      console.error('Error:', error);
+    }
 
     // 自动下载录制文件
     const a = document.createElement('a');
@@ -288,14 +298,14 @@ const Start: React.FC = () => {
   }
 
   const handleFinishCB = () => {
-      if (cameraRecordRef.current) {
-          cameraRecordRef.current.stopRecording();
-      }
-      // 关闭录制器
-      setShowRecorder(false);
+    if (cameraRecordRef.current) {
+      cameraRecordRef.current.stopRecording();
+    }
+    // 关闭录制器
+    setShowRecorder(false);
 
-      // 上传用户行为
-      handleSubmitUserAction();
+    // 上传用户行为
+    handleSubmitUserAction();
   };
 
 
@@ -327,10 +337,10 @@ const Start: React.FC = () => {
             initialX={window.innerWidth - width - margin}
             initialY={margin}
             margin={margin}>
-            <CameraRecord 
-                ref={cameraRecordRef} 
-                onRecordingError={handleRecordingError} 
-                onRecordingComplete={handleRecordingComplete} 
+            <CameraRecord
+              ref={cameraRecordRef}
+              onRecordingError={handleRecordingError}
+              onRecordingComplete={handleRecordingComplete}
             />
           </Draggable>
 

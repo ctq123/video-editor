@@ -9,7 +9,7 @@
 ## 技术栈
 前端：React + TypeScript + Vite + Axios
 
-后端：Node.js
+后端：midwayjs
 
 ## 项目启动
 
