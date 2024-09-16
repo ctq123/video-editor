@@ -17,6 +17,11 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `${token}`;
     }
+
+    // 可中断配置
+    const source = axios.CancelToken.source();
+    config.cancelToken = source.token;
+
     return config;
   },
   (error) => {

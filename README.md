@@ -9,7 +9,8 @@
 ## 技术栈
 前端：React + TypeScript + Vite + Axios
 
-后端：midwayjs
+后端：Node.js + Tensorflow + Face-API + ffmpeg
+
 
 ## 项目启动
 
@@ -36,8 +37,8 @@ yarn dev
 
 ```bash
 ├── public
-├── server
-├── src
+├── server // 服务端
+├── src // 前端
 │   ├── assets
 │   ├── components
 │   ├── page
@@ -51,3 +52,19 @@ yarn dev
 ├── tsconfig.json
 └── vite.config.ts
 ```
+
+
+## 常见问题
+
+1. 分析用户监控录像报错`Error: Cannot find ffprobe`
+  - 确保你已经安装了 ffmpeg 和 ffprobe。ffprobe 通常随 ffmpeg 一起安装。
+  - 你可以使用 Homebrew 安装 ffmpeg：
+    ```bash
+    // macOS 上安装
+    brew install ffmpeg
+    ```
+    ```js
+    // window 上安装
+    到ffmpeg官网下载 Windows 版本的 ffmpeg 压缩包，然后解压，将 bin 目录配置到系统PATH 环境变量中
+    ```
+

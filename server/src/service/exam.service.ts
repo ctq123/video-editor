@@ -103,7 +103,7 @@ export class ExamService {
     const exam = await this.getExam(options);
     // 更新数据
     exam.timeLimit = options.timeLimit;
-    console.log(exam);
+    // console.log(exam);
     const result = await this.update(exam);
     return result;
   }

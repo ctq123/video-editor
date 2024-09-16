@@ -62,3 +62,11 @@ export interface IUser {
   name: string;
   email: string;
 }
+
+export interface IUploadOptions {
+  userId?: number | string;
+  filename?: string;
+  filepath?: string;
+  data?: any;
+  file: any;
+}

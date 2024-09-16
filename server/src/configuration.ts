@@ -7,12 +7,15 @@ import { join } from 'path';
 // import { DefaultErrorFilter } from './filter/default.filter';
 // import { NotFoundFilter } from './filter/notfound.filter';
 import { ReportMiddleware } from './middleware/report.middleware';
+// 本地环境测试使用
+// import * as staticFile from '@midwayjs/static-file';
 
 @Configuration({
   imports: [
     koa,
     validate,
     upload,
+    // staticFile,
     {
       component: info,
       enabledEnvironment: ['local'],

@@ -35,4 +35,8 @@ export default {
     tmpdir: join(__dirname, '../upload'), // 上传临时目录
     cleanTimeout: 300000, // 清理超时
   },
+  cors: {
+    origin: 'http://localhost:5173', // 只允许这个地址访问
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+  },
 } as MidwayConfig;

@@ -1,30 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom';
 import ExamPage from './ExamPage';
 import Draggable from '../components/Draggable';
 import CameraRecord, { CameraRecordHandle } from '../components/CameraRecord';
 import debounce from 'lodash/debounce';
 import http from '../utils/http';
 import { AxiosRequestConfig } from 'axios';
+import { UserExamAction } from '../utils/types.ts';
 import './Start.css'
 
-/** 用户考试行为 */
-interface UserExamAction {
-  /** 考试中断次数 */
-  examInterruptCount: number;
-  /** 切屏次数 */
-  screenChangeCount: number;
-  /** 拷贝次数 */
-  copyCount: number;
-  /** 剪切次数 */
-  cutCount: number;
-  /** 粘贴次数 */
-  pasteCount: number;
-  /** 鼠标离开窗口次数 */
-  mouseLeaveCount: number;
-  /** 鼠标失去焦点次数 */
-  mouseBlurCount: number;
-}
 
 const Start: React.FC = () => {
   const [isStart, setIsStart] = useState(false);
@@ -39,6 +24,7 @@ const Start: React.FC = () => {
     mouseLeaveCount: 0,
     mouseBlurCount: 0,
   }); // 录制状态
+  const navigate = useNavigate();
 
   useEffect(() => {
     // 监听全屏
@@ -255,7 +241,7 @@ const Start: React.FC = () => {
 
   const handleRecordingComplete = async (blob: Blob, url: string) => {
     // 录制完成，处理blob对象，关闭录制器
-    // setShowRecorder(false);
+    setShowRecorder(false);
 
     // 上传录制数据到服务器
     const formData = new FormData();
@@ -272,15 +258,12 @@ const Start: React.FC = () => {
     try {
       const result = await http.post('/api/upload/video', formData, config);
       console.log('上传成功:', result);
+
+      goDetectPage(url);
+
     } catch (error) {
       console.error('Error:', error);
     }
-
-    // 自动下载录制文件
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'recording.webm';
-    a.click();
   };
 
   const handleSubmitUserAction = async () => {
@@ -308,6 +291,26 @@ const Start: React.FC = () => {
     handleSubmitUserAction();
   };
 
+  const goDetectPage = (url: string) => {
+    const confirmed = window.confirm('考试已结束，选择是否查看监控数据?');
+    if (confirmed) {
+      // 用户点击了“确定”
+      console.log('User confirmed');
+
+      // 自动下载录制文件
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'recording.webm';
+      a.click();
+
+      navigate('/detect', { state: { data: userAction } });
+
+    } else {
+      // 用户点击了“取消”
+      console.log('User canceled');
+    }
+  }
+
 
   const margin = 10;
   const width = 200; // 或自定义宽度
@@ -315,45 +318,47 @@ const Start: React.FC = () => {
     <div className='container flex flex-column center'>
       <h1>xxx公司在线笔试</h1>
 
-      {/* 外部按钮 */}
-      {!showRecorder && (
-        <div className='center'>
-          <button
-            className='button'
-            onClick={handleRecordingStart}
-          >
-            开始录制
-          </button>
-        </div>
-      )}
+      <>
+        {/* 外部按钮 */}
+        {!showRecorder && (
+          <div className='center'>
+            <button
+              className='button'
+              onClick={handleRecordingStart}
+            >
+              开始录制
+            </button>
+          </div>
+        )}
 
 
-      {/* CameraRecord 组件 */}
-      {showRecorder && (
-        <>
-          <Draggable
-            width={width}
-            height={200}
-            initialX={window.innerWidth - width - margin}
-            initialY={margin}
-            margin={margin}>
-            <CameraRecord
-              ref={cameraRecordRef}
-              onRecordingError={handleRecordingError}
-              onRecordingComplete={handleRecordingComplete}
-            />
-          </Draggable>
+        {/* CameraRecord 组件 */}
+        {showRecorder && (
+          <>
+            <Draggable
+              width={width}
+              height={200}
+              initialX={window.innerWidth - width - margin}
+              initialY={margin}
+              margin={margin}>
+              <CameraRecord
+                ref={cameraRecordRef}
+                onRecordingError={handleRecordingError}
+                onRecordingComplete={handleRecordingComplete}
+              />
+            </Draggable>
 
-          {/* 在线笔试页面 */}
-          {isStart ?
-            <ExamPage finishExamCB={handleFinishCB} />
-            :
-            <div className='center'>
-              <button className='button' onClick={() => openFullscreen()}>开始考试</button>
-            </div>
-          }
-        </>
-      )}
+            {/* 在线笔试页面 */}
+            {isStart ?
+              <ExamPage finishExamCB={handleFinishCB} />
+              :
+              <div className='center'>
+                <button className='button' onClick={() => openFullscreen()}>开始考试</button>
+              </div>
+            }
+          </>
+        )}
+      </>
     </div>
   )
 }
