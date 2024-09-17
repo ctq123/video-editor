@@ -9,7 +9,7 @@ export interface UserRecordHookRef {
   openFullscreen: () => void;
 }
 
-const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean, EnterFullScreen: () => void, quitFullSreen: () => void) => {
+const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, isStart: boolean, EnterFullScreen: () => void, quitFullSreen: () => void) => {
   /** 记录用户考试行为 */
   const userActionRef = useRef<UserExamAction>({
     examInterruptCount: 0,
@@ -20,6 +20,9 @@ const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean
     mouseLeaveCount: 0,
     mouseBlurCount: 0,
   });
+
+  // 不使用useState解决闭包陷阱，因为它们都在addEventListener回调函数之中
+  const canRecord = useRef(isStart);
 
   useImperativeHandle(ref, () => ({
     openFullscreen,
@@ -69,6 +72,12 @@ const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean
       document.removeEventListener('blur', handleBlur);
     }
   }, []);
+
+  useEffect(() => {
+    console.log('useUserRecordHook', isStart);
+    // 使用ref解决闭包问题
+    canRecord.current = isStart; // 设置是否可以录制
+  }, [isStart]);
 
   const openFullscreen = () => {
     try {
@@ -134,7 +143,7 @@ const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean
       EnterFullScreen();
     } else {
       console.log('退出全屏模式');
-      if (canRecord) {
+      if (canRecord.current) {
         userActionRef.current.examInterruptCount += 1;
       }
 
@@ -148,7 +157,7 @@ const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean
     if (isFullScreen() && window.innerHeight !== screen.height) {
       console.log('退出全屏模式1');
       quitFullSreen();
-      if (canRecord) {
+      if (canRecord.current) {
 
         userActionRef.current.examInterruptCount += 1;
       }
@@ -158,7 +167,7 @@ const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean
   const handleSwitchScreen = () => {
     if (document.hidden) {
       console.log('页面不可见'); // 用户切换到了其他标签页或最小化了浏览器
-      if (canRecord) {
+      if (canRecord.current) {
         userActionRef.current.screenChangeCount += 1;
       }
       // alert('用户切屏');
@@ -175,10 +184,10 @@ const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean
     // console.log('拷贝的内容:', copiedData);
 
     console.log('拷贝的内容:', selection?.toString());
-    if (canRecord) {
+    if (canRecord.current) {
       userActionRef.current.copyCount += 1;
     }
-    console.log('userActionRef.current', userActionRef.current, canRecord)
+    console.log('userActionRef.current', userActionRef.current, canRecord.current, isStart);
     // alert('拷贝内容：' + selection?.toString());
   }
 
@@ -187,7 +196,7 @@ const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean
     // 获取剪切的内容（如果需要）
     const cutData = event?.clipboardData?.getData('text');
     console.log('剪切的内容:', cutData);
-    if (canRecord) {
+    if (canRecord.current) {
       userActionRef.current.cutCount += 1;
     }
   }
@@ -197,21 +206,21 @@ const useUserRecordHook = (ref: React.Ref<UserRecordHookRef>, canRecord: boolean
     // 获取粘贴的内容
     const pastedData = event?.clipboardData?.getData('text');
     console.log('粘贴的内容:', pastedData);
-    if (canRecord) {
+    if (canRecord.current) {
       userActionRef.current.pasteCount += 1;
     }
   }
 
   const handleMouseleave = () => {
     console.log('鼠标离开了视口');
-    if (canRecord) {
+    if (canRecord.current) {
       userActionRef.current.mouseLeaveCount += 1;
     }
   }
 
   const handleBlur = () => {
     console.log('窗口失去焦点');
-    if (canRecord) {
+    if (canRecord.current) {
       userActionRef.current.mouseBlurCount += 1;
     }
   }
