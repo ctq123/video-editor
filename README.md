@@ -4,6 +4,10 @@
 - 防作弊功能，包括切屏、拷贝、粘贴、多屏识别、监控录屏分析等
 
 - <img width="953" alt="image" src="https://github.com/user-attachments/assets/47da4464-4e2d-41d0-ae1a-c0ff4e30cd6e">
+- <img width="958" alt="image" src="https://github.com/user-attachments/assets/ce6b7700-df80-4945-8406-7c119503e863">
+- <img width="1415" alt="image" src="https://github.com/user-attachments/assets/510370d7-fac9-43cb-9aa0-630f9172c770">
+
+
 
 
 ## 环境要求
