@@ -1,7 +1,7 @@
 {
   "name": "my-midway-project",
   "version": "1.0.0",
-  "description": "",
+  "description": "在线笔试系统后台",
   "private": true,
   "dependencies": {
     "@midwayjs/bootstrap": "^3.12.0",
@@ -45,6 +45,6 @@
     "type": "git",
     "url": ""
   },
-  "author": "anonymous",
+  "author": "ctq123",
   "license": "MIT"
 }
