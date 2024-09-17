@@ -22,6 +22,7 @@ const DetectPage: React.FC = () => {
 
     useEffect(() => {
         const { data } = location.state || {};
+        console.log('路由传递参数：', location, data);
         handleSetTrace(data);
 
         // 请求后端数据

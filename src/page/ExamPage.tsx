@@ -12,10 +12,10 @@ interface Question {
 }
 
 interface IProps {
-    finishExamCB: () => void;
+    onFinishExam: () => void;
 }
 
-const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
+const ExamPage: React.FC<IProps> = ({ onFinishExam }) => {
     const [examId, setExamId] = useState<number>(0);
     const [questions, setQuestions] = useState<Question[]>([]);
     const [codingQuestions, setCodingQuestions] = useState<Question[]>([]);
@@ -29,7 +29,6 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
     useEffect(() => {
         fetchExamData();
 
-        // Set up timer
         const timer = setInterval(() => {
             setTimeLeft(prevTime => {
                 if (prevTime <= 1) {
@@ -113,8 +112,8 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
         console.log('Exam finished');
         // alert('考试结束，感谢您的参与！');
         // TODO: 跳转到结果页面
-        if (finishExamCB) {
-            finishExamCB();
+        if (onFinishExam) {
+            onFinishExam();
         }
     }
 
