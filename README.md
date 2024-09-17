@@ -3,6 +3,9 @@
 - 在线笔试功能，包括题目展示、答题、提交答案
 - 防作弊功能，包括切屏、拷贝、粘贴、多屏识别、监控录屏分析等
 
+- <img width="953" alt="image" src="https://github.com/user-attachments/assets/47da4464-4e2d-41d0-ae1a-c0ff4e30cd6e">
+
+
 ## 环境要求
 - Node.js 20.0.0 或更高版本
 
