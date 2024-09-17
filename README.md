@@ -68,3 +68,5 @@ yarn dev
     到ffmpeg官网下载 Windows 版本的 ffmpeg 压缩包，然后解压，将 bin 目录配置到系统PATH 环境变量中
     ```
 
+2. 监控录像分析报错`Error fetching analysis timeout of xxx exceeded`
+  - 接口请求超时，请到src/utils/http中增大接口超时限制。

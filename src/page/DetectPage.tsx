@@ -31,21 +31,21 @@ const DetectPage: React.FC = () => {
     // TODO：待修复，目前没什么用，不会执行中断操作，即便重新刷新浏览器服务端接口依然运行
     useEffect(() => {
         const handleBeforeUnload = () => {
-          cancelRequest();
+            cancelRequest();
         };
-    
+
         // 添加事件监听器
         window.addEventListener('beforeunload', handleBeforeUnload);
-    
+
         // 监听路由变化
         console.log('Route changed to:', location.pathname);
-    
+
         // 清理函数
         return () => {
-          window.removeEventListener('beforeunload', handleBeforeUnload);
-          console.log('卸载组件');
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            console.log('卸载组件');
         };
-      }, [location]);
+    }, [location]);
 
     const fetchKeyframes = throttle(async () => {
         if (loading || timeRef.current) return;
@@ -84,19 +84,11 @@ const DetectPage: React.FC = () => {
 
             console.log('人脸检测信息:', result);
 
-            const { detectionList } = result.data;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const detections = detectionList.map((item: any) => {
-                if (Array.isArray(item) && item.length) {
-                    return Object.entries(item[0]).reduce((acc: IObject, [key, value]) => {
-                        acc[key] = typeof value === 'object' ? '...' : value;
-                        return acc;
-                    }, {});
-                } else {
-                    return {};
-                }
-            })
-            setInfo(detections);
+            const { detectionList } = result.data
+            if (detectionList && detectionList.length) {
+                const ob = Array.isArray(detectionList[0]) && detectionList[0].length ? detectionList[0][0] : null;
+                setInfo(ob);
+            }
 
         } catch (e) {
             console.error('Error fetching analysis:', e);
@@ -105,16 +97,16 @@ const DetectPage: React.FC = () => {
     }
 
     const cancelRequest = () => {
-    if (controllerRef.current) {
-        controllerRef.current.abort(); // 中断请求
-        console.log('Request aborted');
-    }
+        if (controllerRef.current) {
+            controllerRef.current.abort(); // 中断请求
+            console.log('Request aborted');
+        }
     };
 
     const handleSetTrace = (userAction: IObject) => {
         const obj: IObject = {};
         Object.entries(userAction).map(([key, value]) => {
-            switch(key) {
+            switch (key) {
                 case 'examInterruptCount':
                     obj['考试中断次数'] = value;
                     break;
@@ -153,47 +145,58 @@ const DetectPage: React.FC = () => {
         </div>
     )
 
+    // 只有本地测试静态连接使用
     const baseUrl = 'http://localhost:7001';
 
     return (
         <div className='container flex flex-column center'>
-            <h1>xxx公司在线笔试</h1>
-        <div className="flex center flex-column detect-page">
-            <h2>监控录像分析报告</h2>
-            <div className='mt-2'>
-                <h4>当前单次考试行为如下：</h4>
-                <div>
-                    { Object.entries(userTrace).map(([key, value]) => (<div key={key}>{key}: {value}</div>)) }
+            <div className='top-fixed flex-center'>
+                <h2>xxx公司在线笔试-用户考试行为分析报告</h2>
+            </div>
+
+            <div className="flex center flex-column detect-page">
+                <div className='mt-2'>
+                    <h3>当前次考试行为如下：</h3>
+                    <div>
+                        {Object.entries(userTrace).map(([key, value]) => (<div key={key}>{key}: {value}</div>))}
+                    </div>
+                </div>
+
+                <h3>监控录像分析如下：</h3>
+                <div className='mt-2'>
+                    {loading ? (
+                        loadingDom('正在提取关键帧，请稍后……')
+                    ) : (
+                        <div className="keyframes-container">
+                            {keyframes.map((keyframe, index) => (
+                                <img key={index} src={`${baseUrl}/images/${keyframe}`} alt={keyframe} />
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className='mt-2'>
+                    {aLoading && <div>温馨提示：该请求耗时较长，会占满后端服务，需要耐心等几分钟。</div>}
+                    {aLoading ? (
+                        loadingDom('正在检测人脸数据，请稍后……')
+                    ) : (
+                        <div>
+                            {info &&
+                                (<div>
+                                    <div>人脸检测信息如下：</div>
+                                    <pre className='info'>{JSON.stringify(info, null, 2)}</pre>
+                                </div>)
+                            }
+                        </div>
+                    )}
+                </div>
+
+                <div className='bottom-fixed flex-center'>
+                    <button onClick={goHomePage}>
+                        返回主页
+                    </button>
                 </div>
             </div>
-            
-            <div className='mt-2'>
-                {loading ? (
-                    loadingDom('正在提取关键帧，请稍后……')
-                ) : (
-                    <div className="keyframes-container">
-                        {keyframes.map((keyframe, index) => (
-                            <img key={index} src={`${baseUrl}/images/${keyframe}`} alt={keyframe} />
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            <div className='mt-2'>
-                {aLoading && <div>温馨提示：该请求耗时较长，会占满后端服务，需要耐心等几分钟。</div>}
-                {aLoading ? (
-                    loadingDom('正在检测人脸数据，请稍后……')
-                ) : (
-                    <pre className='info'>{JSON.stringify(info, null, 10)}</pre>
-                )}
-            </div>
-
-            <div className='bottom-fixed flex-center'>
-                <button onClick={goHomePage}>
-                    返回主页
-                </button>
-            </div>
-        </div>
         </div>
     );
 }

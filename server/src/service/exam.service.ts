@@ -64,8 +64,7 @@ const questions: IQuestion[] = [
   {
     id: 4,
     type: 'coding',
-    questionText: `
-      #### 给出一个组乱序的数字，其中元素有正有负，求三个数的最大乘积.
+    questionText: `##### 给出一个组乱序的数字，其中元素有正有负，求三个数的最大乘积.
 
       示例 1：
 

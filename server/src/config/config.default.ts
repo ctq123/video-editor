@@ -9,7 +9,7 @@ export default {
   },
   upload: {
     mode: 'file',
-    fileSize: '1000mb',
+    fileSize: '100mb', // 上传大小限制
     whitelist: [
       '.webm', // WebM 视频
       '.mp4', // MP4 视频

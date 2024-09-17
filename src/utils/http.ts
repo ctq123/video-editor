@@ -3,6 +3,7 @@ import axios from 'axios';
 // 创建一个 axios 实例
 const axiosInstance = axios.create({
   baseURL: '/', // 设置基础的请求 URL
+  timeout: 1000 * 60 * 3, // 3分钟，设置请求超时时间
   headers: {
     'Content-Type': 'application/json', // 设置默认的请求头
   },
