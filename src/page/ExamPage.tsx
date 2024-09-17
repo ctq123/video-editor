@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import CodingPage, { CodingPageHandle} from './CodingPage';
-import QuestionPage, { QuestionPageHandle} from './QuestionPage';
+import CodingPage, { CodingPageHandle } from './CodingPage';
+import QuestionPage, { QuestionPageHandle } from './QuestionPage';
 import http from '../utils/http';
+import './ExamPage.css';
 
 interface Question {
     id: string;
@@ -45,7 +46,7 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
                     }
                     // 结束考试
                     handleFinish();
-                    
+
                     return 0;
                 }
                 timeRef.current = prevTime - 1;
@@ -118,11 +119,16 @@ const ExamPage: React.FC<IProps> = ({ finishExamCB }) => {
     }
 
     return (
-        <div>
-            <div className='flex center mb-2'>考试剩余时间: {formatTime(timeLeft)}</div>
-            { !showCoding && <QuestionPage ref={questionRef} examId={examId} questions={questions} submitSuccessCB={handleQustionSubmitCB} /> }
-            { showCoding && <CodingPage ref={codingRef} examId={examId} question={codingQuestion} submitSuccessCB={handleQustionSubmitCB} /> }
-        </div>
+        <>
+            <div className='flex flex-column center top-fixed'>
+                <div className="header-title">xxx公司在线笔试</div>
+                <div className='flex-center'>考试剩余时间: {formatTime(timeLeft)}</div>
+            </div>
+            <div className='content-container'>
+                {!showCoding && <QuestionPage ref={questionRef} examId={examId} questions={questions} submitSuccessCB={handleQustionSubmitCB} />}
+                {showCoding && <CodingPage ref={codingRef} examId={examId} question={codingQuestion} submitSuccessCB={handleQustionSubmitCB} />}
+            </div>
+        </>
     );
 };
 

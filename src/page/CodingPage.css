@@ -1,26 +1,30 @@
-/* CodingQuestion.css */
+.coding-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .coding-question {
   display: flex;
-  width: 100vw;
+  flex: 1;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .question-description {
-  width: 30%;
-  margin-right: 30px;
+  max-width: 500px;
+  height: 100%;
+  min-height: 490px;
+  margin-right: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  overflow: auto;
 }
 
-.code-editor {
-  width: 60%;
-}
-
-.actions {
-  margin-top: 20px;
-}
-
-.button + .button {
-  margin-left: 10px;
-}
-
-.result-actions {
-  margin-top: 20px;
+.code-content {
+  flex: 1;
+  box-sizing: border-box;
 }

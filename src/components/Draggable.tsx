@@ -15,7 +15,7 @@ interface DraggableProps {
 
 const Draggable: React.FC<DraggableProps> = ({
   width = 200,
-  height = 200,
+  height = 150,
   initialX = 0,
   initialY = 0,
   margin = 10,

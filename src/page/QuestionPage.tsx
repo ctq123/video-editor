@@ -78,7 +78,7 @@ const QuestionPage = forwardRef<QuestionPageHandle, IProps>(({
 
 
   return (
-    <>
+    <div className='question-page'>
       {questions.map((question, index) => {
         return (
           <div key={question.id} className="question">
@@ -127,12 +127,14 @@ const QuestionPage = forwardRef<QuestionPageHandle, IProps>(({
       })}
       {
         questions.length > 0 && 
-        <button className='button' onClick={() => handleSubmit()} disabled={isSubmitting}>
-          {'提交答案'}
-        </button>
+        <div className='bottom-fixed flex-center'>
+          <button onClick={() => handleSubmit()} disabled={isSubmitting}>
+            提交答案
+          </button>
+        </div>
       }
       
-    </>
+    </div>
   );
 });
 

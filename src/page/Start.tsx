@@ -315,13 +315,12 @@ const Start: React.FC = () => {
   const margin = 10;
   const width = 200; // 或自定义宽度
   return (
-    <div className='container flex flex-column center'>
-      <h1>xxx公司在线笔试</h1>
-
+    <div className='container flex center flex-column'>
       <>
         {/* 外部按钮 */}
         {!showRecorder && (
-          <div className='center'>
+          <div className='flex flex-column center'>
+            <h1>xxx公司在线笔试</h1>
             <button
               className='button'
               onClick={handleRecordingStart}
@@ -337,7 +336,7 @@ const Start: React.FC = () => {
           <>
             <Draggable
               width={width}
-              height={200}
+              height={50}
               initialX={window.innerWidth - width - margin}
               initialY={margin}
               margin={margin}>
@@ -345,6 +344,8 @@ const Start: React.FC = () => {
                 ref={cameraRecordRef}
                 onRecordingError={handleRecordingError}
                 onRecordingComplete={handleRecordingComplete}
+                videoHeight={50}
+                videoWidth={100}
               />
             </Draggable>
 
@@ -352,7 +353,8 @@ const Start: React.FC = () => {
             {isStart ?
               <ExamPage finishExamCB={handleFinishCB} />
               :
-              <div className='center'>
+              <div className='flex flex-column center'>
+                <h1>xxx公司在线笔试</h1>
                 <button className='button' onClick={() => openFullscreen()}>开始考试</button>
               </div>
             }

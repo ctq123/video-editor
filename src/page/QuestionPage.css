@@ -1,12 +1,17 @@
-.question {
+.question-page {
+  padding: 20px;
+}
+
+.question-page .question {
   margin-bottom: 20px;
 }
 
-textarea {
+.question-page textarea {
   width: 100%;
   height: 100px;
 }
 
-input[type="text"] {
+.question-page input[type="text"] {
   width: 100%;
+  max-width: 500px;
 }

@@ -188,8 +188,8 @@ const DetectPage: React.FC = () => {
                 )}
             </div>
 
-            <div className='mt-2'>
-                <button className='button' onClick={goHomePage}>
+            <div className='bottom-fixed flex-center'>
+                <button onClick={goHomePage}>
                     返回主页
                 </button>
             </div>
