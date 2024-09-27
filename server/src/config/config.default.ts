@@ -39,4 +39,14 @@ export default {
     origin: 'http://localhost:5173', // 只允许这个地址访问
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
   },
+  // 静态文件配置
+  staticFile: {
+    dirs: {
+      // 将 outputs 目录作为静态资源公开
+      output: {
+        prefix: '/outputs',
+        dir: join(__dirname, '../../outputs'),
+      },
+    },
+  },
 } as MidwayConfig;

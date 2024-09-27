@@ -1,9 +1,9 @@
 {
-  "name": "online-test-system",
+  "name": "video-editor",
   "private": true,
   "version": "0.0.0",
   "author": "ctq123",
-  "description": "防作弊在线笔试系统",
+  "description": "Web端短视频编辑器",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,6 +22,7 @@
     "@codemirror/view": "^6.33.0",
     "@uiw/codemirror-themes": "^4.23.2",
     "@uiw/react-codemirror": "^4.23.2",
+    "antd": "^5.21.1",
     "axios": "^1.7.7",
     "lodash": "^4.17.21",
     "react": "^18.3.1",

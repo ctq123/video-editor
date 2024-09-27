@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
     "@midwayjs/bootstrap": "^3.12.0",
-    "@midwayjs/core": "^3.12.0",
+    "@midwayjs/core": "^3.18.0",
     "@midwayjs/info": "^3.12.0",
     "@midwayjs/koa": "^3.12.0",
     "@midwayjs/logger": "^3.1.0",

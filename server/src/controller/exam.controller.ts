@@ -68,13 +68,6 @@ export class ExamController {
         data: null,
       };
     }
-    // 提取关键帧
-    const count = await this.videoService.extractKeyFrames(
-      filePath,
-      outputDir,
-      1,
-      5
-    );
 
     try {
       const files = fs.readdirSync(outputDir);
@@ -84,7 +77,6 @@ export class ExamController {
         message: '',
         data: {
           images,
-          count,
         },
       };
     } catch (error) {
@@ -94,46 +86,5 @@ export class ExamController {
         data: null,
       };
     }
-  }
-
-  @Post('/analysis')
-  async analyAction(@Body() actionBody) {
-    const { userId, keyFrameCount } = actionBody;
-    // 分析用户考试行为
-    const filePath = this.videoService.getUserVideoFilePath(userId);
-    const outputDir = path.join(__dirname, '../output');
-
-    if (!filePath) {
-      return {
-        success: true,
-        message: 'No video file Found.',
-        data: {},
-      };
-    }
-
-    const files = fs.readdirSync(outputDir);
-    const images = files.filter(file => /\.(png)$/i.test(file));
-
-    const detectionList = [];
-    let count = keyFrameCount || 5;
-    count = Math.min(count, images.length);
-    // 处理每个关键帧
-    for (let i = 1; i <= count; i++) {
-      const framePath = path.join(outputDir, `keyframe-${i}.png`);
-      const detections = await this.videoService.detectFaces(framePath);
-      console.log(`Detected faces in frame ${i}:`, detections);
-      detectionList.push(detections);
-    }
-
-    // 人脸检测、识别和匹配维度
-    // TODO: 根据阀值和位置在关键帧上打标
-
-    return {
-      success: true,
-      message: 'OK',
-      data: {
-        detectionList,
-      },
-    };
   }
 }

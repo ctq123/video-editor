@@ -1,25 +1,12 @@
 import { Provide } from '@midwayjs/core';
 import * as ffmpeg from 'fluent-ffmpeg';
-import * as faceapi from 'face-api.js';
-// import * as canvas from 'canvas';
+import * as fs from 'fs';
 import * as path from 'path';
-// import { Canvas, Image, ImageData } from 'canvas';
-import { Canvas, loadImage, Image, ImageData } from 'canvas';
-
-// faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
-// 设定 canvas 和 face-api.js 环境
-faceapi.env.monkeyPatch({
-  Canvas: Canvas as any,
-  Image: Image as any,
-  ImageData: ImageData as any,
-});
 
 const videoFilePathMap = {}; // 临时变量-测试使用
 
 @Provide()
 export class VideoService {
-  private modelsLoaded = false;
-
   async setUserVideoFilePath(userId: string | number, filepath: string) {
     // 测试使用
     videoFilePathMap[userId] = filepath;
@@ -65,26 +52,30 @@ export class VideoService {
     });
   }
 
-  // 加载模型
-  async loadModels() {
-    if (!this.modelsLoaded) {
-      const modelPath = path.join(__dirname, '../models'); // 模型路径
-      await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath);
-      await faceapi.nets.faceLandmark68Net.loadFromDisk(modelPath);
-      await faceapi.nets.faceRecognitionNet.loadFromDisk(modelPath);
-      this.modelsLoaded = true;
+  async processVideo(
+    inputPath: string,
+    startTime: number,
+    endTime: number
+  ): Promise<string> {
+    const outputDir = path.join(__dirname, '../../outputs');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
     }
-  }
 
-  // 检测人脸
-  async detectFaces(imagePath: string) {
-    await this.loadModels();
-    const image = await loadImage(imagePath);
+    const outputPath = path.join(outputDir, `processed_${Date.now()}.mp4`);
 
-    const detections = await faceapi
-      .detectAllFaces(image as any)
-      .withFaceLandmarks()
-      .withFaceDescriptors();
-    return detections;
+    return new Promise((resolve, reject) => {
+      ffmpeg(inputPath)
+        .setStartTime(startTime)
+        .setDuration(endTime - startTime)
+        .output(outputPath)
+        .on('end', () => {
+          resolve(outputPath);
+        })
+        .on('error', err => {
+          reject(err);
+        })
+        .run();
+    });
   }
 }

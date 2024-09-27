@@ -662,10 +662,20 @@
     scmp "^2.1.0"
     should-send-same-site-none "^2.0.5"
 
-"@midwayjs/core@^3.12.0", "@midwayjs/core@^3.17.1":
+"@midwayjs/core@^3.17.1":
   version "3.17.1"
   resolved "https://registry.npmmirror.com/@midwayjs/core/-/core-3.17.1.tgz#bf85e72d375d728344733fb24b2ebb3972e602e5"
   integrity sha512-kdUeX7/BjgP88Q1ry/80kqW8BG75OwJfmOqgTgVvYI/YIl56W5FlPXwOWYWGEYEfTRuE/8Oupk5fWmLEEmhLmw==
+  dependencies:
+    "@midwayjs/glob" "^1.0.2"
+    class-transformer "0.5.1"
+    picomatch "2.3.1"
+    reflect-metadata "0.2.2"
+
+"@midwayjs/core@^3.18.0":
+  version "3.18.0"
+  resolved "https://registry.npmmirror.com/@midwayjs/core/-/core-3.18.0.tgz#42c9751a59c29bb2cf21cf3f9902cccaf0b44451"
+  integrity sha512-zvA5wC9XpnYwe3N06jEcmrMU3IIipyy6FIy5GMER43iYCTZa/J81tfMr7KttDTaW/FF9thx/jJNPqBiUiF6udQ==
   dependencies:
     "@midwayjs/glob" "^1.0.2"
     class-transformer "0.5.1"
