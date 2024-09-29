@@ -57,7 +57,7 @@ export class VideoService {
     startTime: number,
     endTime: number
   ): Promise<string> {
-    const outputDir = path.join(__dirname, '../../outputs');
+    const outputDir = path.join(__dirname, '../upload');
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }

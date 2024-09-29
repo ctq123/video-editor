@@ -1,4 +1,5 @@
 import { MidwayConfig } from '@midwayjs/core';
+// import { tmpdir } from 'os';
 import { join } from 'path';
 
 export default {
@@ -32,8 +33,10 @@ export default {
       '.zip', // 压缩文件
       // 添加其他需要支持的文件类型
     ],
+    // tmpdir: join(tmpdir(), 'midway-upload'), // 上传临时目录
     tmpdir: join(__dirname, '../upload'), // 上传临时目录
-    cleanTimeout: 300000, // 清理超时
+    cleanTimeout: 5 * 60 * 1000, // 清理超时
+    // match: /\/api\/upload/, // 匹配上传接口
   },
   cors: {
     origin: 'http://localhost:5173', // 只允许这个地址访问
@@ -42,10 +45,10 @@ export default {
   // 静态文件配置
   staticFile: {
     dirs: {
-      // 将 outputs 目录作为静态资源公开
+      // 将 upload 目录作为静态资源公开
       output: {
-        prefix: '/outputs',
-        dir: join(__dirname, '../../outputs'),
+        prefix: '/upload',
+        dir: join(__dirname, '../upload'),
       },
     },
   },

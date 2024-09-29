@@ -21,6 +21,7 @@ export class VideoController {
 
   @Post('/upload')
   async upload(@Files() files, @Fields() fields) {
+    console.log('upload', files, fields);
     const { startTime, endTime } = fields;
     const videoFile = files.video;
 
@@ -36,7 +37,7 @@ export class VideoController {
         Number(endTime)
       );
 
-      const videoUrl = `/outputs/${path.basename(outputVideo)}`;
+      const videoUrl = `/upload/${path.basename(outputVideo)}`;
       return { success: true, data: videoUrl, message: '视频处理成功' }; // 返回视频的URL
     } catch (error) {
       console.error(error);
