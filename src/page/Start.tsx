@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Upload, Button, InputNumber, message, Spin } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import http from '../utils/http';
+import { ResponseData } from '../interface.ts';
 
 const baseUrl = 'http://localhost:7001';
 const Start = () => {
@@ -42,15 +43,16 @@ const Start = () => {
 
     try {
       setLoading(true);
-      const response = await http.post('/api/video/upload', formData, {
+      const data: ResponseData = await http.post('/api/video/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      const { data } = response;
+      console.log('data', data);
+
       if (data.success) {
-        setProcessedVideoUrl(`${baseUrl}${data.videoUrl}`);
+        setProcessedVideoUrl(`${baseUrl}${data.data}`);
         message.success('视频处理成功');
       } else {
         message.error('视频处理失败');

@@ -22,17 +22,18 @@ export class VideoController {
   @Post('/upload')
   async upload(@Files() files, @Fields() fields) {
     console.log('upload', files, fields);
-    const { startTime, endTime } = fields;
-    const videoFile = files.video;
 
-    if (!videoFile) {
-      return { success: false, message: '视频文件不存在' };
+    if (!files || !files.length) {
+      return { success: false, data: null, message: '视频文件不存在' };
     }
+
+    const { startTime, endTime } = fields;
+    const videoFile = files[0];
 
     try {
       // 调用服务层处理视频
       const outputVideo = await this.videoService.processVideo(
-        videoFile.filepath,
+        videoFile.data,
         Number(startTime),
         Number(endTime)
       );
