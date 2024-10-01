@@ -46,7 +46,7 @@ const Start: React.FC = () => {
       if (data.success) {
         message.success('视频合并成功');
         // 这里可以添加合并后视频预览逻辑
-        navigate('/process', { state: { videoUrl: data.data } });
+        navigate('/process', { state: { data: data.data } });
       } else {
         message.error(data.message || '视频合并失败');
       }

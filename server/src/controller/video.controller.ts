@@ -62,9 +62,15 @@ export class VideoController {
     const videoPaths = videoFiles.map(file => file.data);
 
     try {
-      const outputVideo = await this.videoService.mergeVideos(videoPaths);
-      const videoUrl = `/upload/${path.basename(outputVideo)}`;
-      return { success: true, data: videoUrl, message: '视频合并成功' };
+      const { outputPath, totalDuration } = await this.videoService.mergeVideos(
+        videoPaths
+      );
+      const videoUrl = `/upload/${path.basename(outputPath)}`;
+      return {
+        success: true,
+        data: { videoUrl, totalDuration },
+        message: '视频合并成功',
+      };
     } catch (error) {
       console.error(error);
       return { success: false, data: null, message: '视频合并失败' };
@@ -91,19 +97,24 @@ export class VideoController {
     }
 
     try {
-      const outputVideo = await this.videoService.processVideo(
-        videoFilePath,
-        audioFile.data,
-        Number(startTime),
-        Number(endTime),
-        filterType,
-        Number(volume),
-        Number(brightness),
-        Number(blur)
-      );
+      const { outputPath, totalDuration } =
+        await this.videoService.processVideo(
+          videoFilePath,
+          audioFile.data,
+          Number(startTime),
+          Number(endTime),
+          filterType,
+          Number(volume),
+          Number(brightness),
+          Number(blur)
+        );
 
-      const videoUrl = `/upload/${path.basename(outputVideo)}`;
-      return { success: true, data: videoUrl, message: '处理成功' };
+      const videoUrl = `/upload/${path.basename(outputPath)}`;
+      return {
+        success: true,
+        data: { videoUrl, totalDuration },
+        message: '处理成功',
+      };
     } catch (error) {
       console.error(error);
       return { success: false, data: null, message: '处理失败' };

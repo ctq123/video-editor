@@ -8,7 +8,7 @@ import Constants from '../utils/Constants.ts';
 
 const { Option } = Select;
 const ProcessVideo: React.FC = () => {
-  const [processedVideoUrl, setProcessedVideoUrl] = useState<string>('');
+  const [videoUrl, setVideoUrl] = useState<string>('');
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [timeRange, setTimeRange] = useState<[number, number]>([0, 10]); // 使用双滑块控制时间范围
   const [filterType, setFilterType] = useState<string>('');
@@ -20,12 +20,12 @@ const ProcessVideo: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const { videoUrl } = location.state || {};
-    console.log('路由传递参数：', location, videoUrl);
+    const { data } = location.state || {};
+    console.log('路由传递参数：', location, data);
     // handleSetTrace(data);
-
-    setProcessedVideoUrl(videoUrl);
-
+    if (!data) return;
+    setVideoUrl(data.videoUrl);
+    setTimeRange([0, data.totalDuration]);
 }, []);
 
 const goHomePage = () => {
@@ -36,7 +36,7 @@ const goHomePage = () => {
     const formData = new FormData();
     // if (videoFile) formData.append('video', videoFile);
     if (audioFile) formData.append('audio', audioFile);
-    formData.append('videoPath', String(processedVideoUrl));
+    formData.append('videoPath', String(videoUrl));
     formData.append('startTime', String(timeRange[0]));
     formData.append('endTime', String(timeRange[1]));
     formData.append('filterType', filterType);
@@ -55,7 +55,7 @@ const goHomePage = () => {
       if (data.success) {
         message.success('视频处理成功');
         // 这里可以添加视频预览逻辑
-        setProcessedVideoUrl(data.data);
+        setVideoUrl(data.data);
       } else {
         message.error(data.message || '视频处理失败');
       }
@@ -74,7 +74,7 @@ const goHomePage = () => {
       {/* 处理后的视频预览 */}
       <div style={{ marginTop: '20px' }}>
         <h3>处理后的视频预览：</h3>
-        {processedVideoUrl && <video controls width="600" src={Constants.BaseUrl + processedVideoUrl} /> }
+        {videoUrl && <video controls width="600" src={Constants.BaseUrl + videoUrl} /> }
       </div>
 
       {/* <Upload beforeUpload={(file) => { setVideoFile(file); return false; }} accept="video/*">
@@ -143,7 +143,7 @@ const goHomePage = () => {
         <Button
           type="primary"
           onClick={handleProcessVideo}
-          disabled={loading || !processedVideoUrl}
+          disabled={loading || !videoUrl}
         >
           {loading ? <Spin /> : '处理视频'}
         </Button>

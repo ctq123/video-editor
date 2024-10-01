@@ -21,6 +21,19 @@ export class VideoService {
     return videoFilePathMap[userId] || '';
   }
 
+  private getVideoDuration(filePath: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+      ffmpeg.ffprobe(filePath, (err, metadata) => {
+        if (err) {
+          reject(err);
+        } else {
+          const duration = metadata.format.duration; // 获取视频时长（秒）
+          resolve(duration);
+        }
+      });
+    });
+  }
+
   // 提取关键帧的方法
   async extractKeyFrames(
     videoPath: string,
@@ -79,7 +92,9 @@ export class VideoService {
     });
   }
 
-  async mergeVideos(videoPaths: string[]): Promise<string> {
+  async mergeVideos(
+    videoPaths: string[]
+  ): Promise<{ outputPath: string; totalDuration: number }> {
     const outputDir = path.join(__dirname, '../upload');
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
@@ -95,8 +110,14 @@ export class VideoService {
       });
 
       command
-        .on('end', () => {
-          resolve(outputPath);
+        .on('end', async () => {
+          // 获取视频时长
+          try {
+            const totalDuration = await this.getVideoDuration(outputPath);
+            resolve({ outputPath, totalDuration });
+          } catch (error) {
+            reject(error);
+          }
         })
         .on('error', (err: Error) => {
           reject(err);
@@ -114,7 +135,7 @@ export class VideoService {
     volume: number,
     brightness: number,
     blur: number
-  ): Promise<string> {
+  ): Promise<{ outputPath: string; totalDuration: number }> {
     const outputDir = path.join(__dirname, '../upload');
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
@@ -156,8 +177,14 @@ export class VideoService {
       command
         .addInput(audioPath)
         .audioFilter(`volume=${volume}`) // 设置音量
-        .on('end', () => {
-          resolve(outputPath);
+        .on('end', async () => {
+          // 获取视频时长
+          try {
+            const totalDuration = await this.getVideoDuration(outputPath);
+            resolve({ outputPath, totalDuration });
+          } catch (error) {
+            reject(error);
+          }
         })
         .on('error', err => {
           reject(err);
