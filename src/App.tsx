@@ -1,14 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import StartPage from './page/Start';
-import DetectPage from './page/DetectPage';
+import Start from './page/Start';
+import ProcessVideo from './page/ProcessVideo';
 import './App.css'
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<StartPage />} />
-        <Route path="/detect" element={<DetectPage />} />
+        <Route path="/" element={<Start />} />
+        <Route path="/process" element={<ProcessVideo />} />
       </Routes>
     </Router>
   )

@@ -52,7 +52,7 @@ export class VideoService {
     });
   }
 
-  async processVideo(
+  async uploadVideo(
     inputPath: string,
     startTime: number,
     endTime: number
@@ -62,7 +62,7 @@ export class VideoService {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    const outputPath = path.join(outputDir, `processed_${Date.now()}.mp4`);
+    const outputPath = path.join(outputDir, `upload_${Date.now()}.mp4`);
 
     return new Promise((resolve, reject) => {
       ffmpeg(inputPath)
@@ -76,6 +76,93 @@ export class VideoService {
           reject(err);
         })
         .run();
+    });
+  }
+
+  async mergeVideos(videoPaths: string[]): Promise<string> {
+    const outputDir = path.join(__dirname, '../upload');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const outputPath = path.join(outputDir, `merged_${Date.now()}.mp4`);
+
+    return new Promise((resolve, reject) => {
+      const command = ffmpeg();
+
+      videoPaths.forEach(videoPath => {
+        command.input(videoPath);
+      });
+
+      command
+        .on('end', () => {
+          resolve(outputPath);
+        })
+        .on('error', (err: Error) => {
+          reject(err);
+        })
+        .mergeToFile(outputPath);
+    });
+  }
+
+  async processVideo(
+    inputPath: string,
+    audioPath: string,
+    startTime: number,
+    endTime: number,
+    filterType: string,
+    volume: number,
+    brightness: number,
+    blur: number
+  ): Promise<string> {
+    const outputDir = path.join(__dirname, '../upload');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const outputPath = path.join(outputDir, `processed_${Date.now()}.mp4`);
+
+    return new Promise((resolve, reject) => {
+      const command = ffmpeg(inputPath)
+        .setStartTime(startTime)
+        .setDuration(endTime - startTime)
+        .output(outputPath);
+
+      // 添加视频滤镜
+      const videoFilters = [];
+
+      if (filterType === 'lowpass') {
+        videoFilters.push('lowpass=f=3000');
+      } else if (filterType === 'highpass') {
+        videoFilters.push('highpass=f=300');
+      }
+
+      // 添加亮度调节
+      if (brightness !== 0) {
+        videoFilters.push(`eq=brightness=${brightness}`);
+      }
+
+      // 添加模糊调节
+      if (blur > 0) {
+        videoFilters.push(`boxblur=${blur}`);
+      }
+
+      // 应用所有视频滤镜
+      if (videoFilters.length > 0) {
+        command.videoFilter(videoFilters.join(','));
+      }
+
+      // 添加背景音乐和音量
+      command
+        .addInput(audioPath)
+        .audioFilter(`volume=${volume}`) // 设置音量
+        .on('end', () => {
+          resolve(outputPath);
+        })
+        .on('error', err => {
+          reject(err);
+        })
+        .mergeToFile(outputPath);
     });
   }
 }
