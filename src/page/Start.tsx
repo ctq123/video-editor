@@ -6,18 +6,22 @@ import http from '../utils/http';
 import { ResponseData } from '../interface.ts';
 
 const Start: React.FC = () => {
-  const [fileList, setFileList] = useState([]);
+  const [fileList, setFileList] = useState<File[]>([]);
+  // const [file1, setFile1] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // 上传文件后将其存储在 state 中
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFileChange = (info: any) => {
-    // const { status, originFileObj } = info.file;
     console.log('handleFileChange', info);
-    if (!info.fileList || !info.fileList.length) return;
-    
-    setFileList(info.fileList);
+    // setFileList(file?.fileList);
+    // setFile1(info.file);
+    if (!info.fileList || info.fileList.length === 0) { 
+      setFileList([]);
+    } else {
+      setFileList((prev) => [...prev, info.file]);
+    }
   };
 
   // 处理视频上传及剪辑操作
@@ -29,8 +33,10 @@ const Start: React.FC = () => {
     }
 
     const formData = new FormData();
-    fileList.forEach(file => {
-      formData.append('videos', file);
+    // formData.append(`file1`, file1);
+    fileList.forEach((file) => {
+      // console.log('file', i, file);
+      formData.append(`videos`, file);
     });
 
     try {

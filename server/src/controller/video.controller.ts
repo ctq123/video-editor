@@ -7,6 +7,7 @@ import {
   Provide,
 } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
+// import { UploadMiddleware, UploadFileInfo } from '@midwayjs/busboy';
 import { VideoService } from '../service/video.service';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -20,6 +21,7 @@ export class VideoController {
   @Inject()
   videoService: VideoService;
 
+  // @Post('/upload', { middleware: [UploadMiddleware] })
   @Post('/upload')
   async upload(@Files() files, @Fields() fields) {
     console.log('upload', files, fields);
@@ -47,19 +49,20 @@ export class VideoController {
     }
   }
 
+  // @Post('/merge', { middleware: [UploadMiddleware] })
   @Post('/merge')
-  async merge(@Files() files) {
-    const videoFiles = files.videos;
-
-    if (!videoFiles || videoFiles.length < 2) {
+  async merge(@Files() files, @Fields() fields) {
+    console.log('merge', files, fields);
+    // const videoFiles = fields?.videos;
+    if (!Array.isArray(files) || files.length < 1) {
       return {
         success: false,
         data: null,
-        message: '至少需要两个视频文件进行合并',
+        message: '视频文件不能为空',
       };
     }
 
-    const videoPaths = videoFiles.map(file => file.data);
+    const videoPaths = files.map(file => file.data).filter(Boolean);
 
     try {
       const { outputPath, totalDuration } = await this.videoService.mergeVideos(
@@ -77,10 +80,12 @@ export class VideoController {
     }
   }
 
+  // @Post('/process', { middleware: [UploadMiddleware] })
   @Post('/process')
   async processVideo(@Files() files, @Fields() fields) {
     // const videoFile = files.video;
-    const audioFile = files.audio;
+    // const audioFile = files[0];
+    const audioFilePath = files.length ? files[0]?.data : null;
     const {
       startTime,
       endTime,
@@ -100,7 +105,7 @@ export class VideoController {
       const { outputPath, totalDuration } =
         await this.videoService.processVideo(
           videoFilePath,
-          audioFile.data,
+          audioFilePath,
           Number(startTime),
           Number(endTime),
           filterType,

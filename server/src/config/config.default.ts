@@ -31,12 +31,27 @@ export default {
       '.xlsx', // Excel 文档
       '.pptx', // PowerPoint 文档
       '.zip', // 压缩文件
-      // 添加其他需要支持的文件类型
+      '.tif',
+      '.psd',
+      '.svg',
+      '.js',
+      '.jsx',
+      '.json',
+      '.css',
+      '.less',
+      '.html',
+      '.htm',
+      '.xml',
+      '.zip',
+      '.gz',
+      '.tgz',
+      '.gzip',
     ],
     // tmpdir: join(tmpdir(), 'midway-upload'), // 上传临时目录
     tmpdir: join(__dirname, '../upload'), // 上传临时目录
     cleanTimeout: 5 * 60 * 1000, // 清理超时
     // match: /\/api\/upload/, // 匹配上传接口
+    allowFieldsDuplication: true, // 允许字段重复
   },
   cors: {
     origin: 'http://localhost:5173', // 只允许这个地址访问

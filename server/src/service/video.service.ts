@@ -128,7 +128,7 @@ export class VideoService {
 
   async processVideo(
     inputPath: string,
-    audioPath: string,
+    audioPath: string | null, // 允许 audioPath 为 null
     startTime: number,
     endTime: number,
     filterType: string,
@@ -137,20 +137,30 @@ export class VideoService {
     blur: number
   ): Promise<{ outputPath: string; totalDuration: number }> {
     const outputDir = path.join(__dirname, '../upload');
+
+    // 确保输出目录存在
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
+    // 生成唯一的输出文件路径
     const outputPath = path.join(outputDir, `processed_${Date.now()}.mp4`);
+    console.log('Output path:', outputPath); // Debug output path
 
     return new Promise((resolve, reject) => {
+      // 检查输入文件是否存在
+      if (!fs.existsSync(inputPath)) {
+        return reject(new Error('Input file does not exist.'));
+      }
+
       const command = ffmpeg(inputPath)
         .setStartTime(startTime)
         .setDuration(endTime - startTime)
-        .output(outputPath);
+        .output(outputPath)
+        .outputOptions('-y'); // 确保覆盖现有文件
 
       // 添加视频滤镜
-      const videoFilters = [];
+      const videoFilters: string[] = [];
 
       if (filterType === 'lowpass') {
         videoFilters.push('lowpass=f=3000');
@@ -173,21 +183,24 @@ export class VideoService {
         command.videoFilter(videoFilters.join(','));
       }
 
-      // 添加背景音乐和音量
+      // 如果 audioPath 存在
+      if (audioPath) {
+        command.addInput(audioPath).audioFilter(`volume=${volume || 0}`); // 设置音量
+      }
+
       command
-        .addInput(audioPath)
-        .audioFilter(`volume=${volume}`) // 设置音量
         .on('end', async () => {
           // 获取视频时长
           try {
-            const totalDuration = await this.getVideoDuration(outputPath);
-            resolve({ outputPath, totalDuration });
+            // const totalDuration = await this.getVideoDuration(outputPath);
+            resolve({ outputPath, totalDuration: 19 });
           } catch (error) {
-            reject(error);
+            reject(new Error(`Error getting video duration: ${error.message}`));
           }
         })
         .on('error', err => {
-          reject(err);
+          console.error('FFmpeg error:', err);
+          reject(new Error(`FFmpeg error: ${err.message}`));
         })
         .mergeToFile(outputPath);
     });

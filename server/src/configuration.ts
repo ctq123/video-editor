@@ -3,6 +3,7 @@ import * as koa from '@midwayjs/koa';
 import * as validate from '@midwayjs/validate';
 import * as info from '@midwayjs/info';
 import * as upload from '@midwayjs/upload';
+// import * as busboy from '@midwayjs/busboy';
 import { join } from 'path';
 // import { DefaultErrorFilter } from './filter/default.filter';
 // import { NotFoundFilter } from './filter/notfound.filter';
@@ -15,6 +16,7 @@ import * as staticFile from '@midwayjs/static-file';
     koa,
     validate,
     upload,
+    // busboy,
     staticFile,
     {
       component: info,
@@ -30,6 +32,7 @@ export class MainConfiguration {
   async onReady() {
     // add middleware
     this.app.useMiddleware([ReportMiddleware]);
+    // this.app.useMiddleware(busboy.UploadMiddleware);
     // add filter
     // this.app.useFilter([NotFoundFilter, DefaultErrorFilter]);
   }

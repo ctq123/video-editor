@@ -1,10 +1,11 @@
 {
   "name": "my-midway-project",
   "version": "1.0.0",
-  "description": "在线笔试系统后台",
+  "description": "视频编辑器后台服务",
   "private": true,
   "dependencies": {
     "@midwayjs/bootstrap": "^3.12.0",
+    "@midwayjs/busboy": "3.17.3",
     "@midwayjs/core": "3.17.1",
     "@midwayjs/info": "^3.12.0",
     "@midwayjs/koa": "^3.12.0",
@@ -13,9 +14,11 @@
     "@midwayjs/upload": "^3.17.3",
     "@midwayjs/validate": "3",
     "@tensorflow/tfjs": "^4.21.0",
+    "@types/multer": "^1.4.12",
     "canvas": "^2.11.2",
     "face-api.js": "^0.22.2",
-    "fluent-ffmpeg": "^2.1.3"
+    "fluent-ffmpeg": "^2.1.3",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "@midwayjs/mock": "^3.12.0",
@@ -32,14 +35,15 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "start": "NODE_ENV=production node ./bootstrap.js",
-    "dev": "cross-env NODE_ENV=local mwtsc --watch --run @midwayjs/mock/app.js",
+    "start": "NODE_ENV=production node ./bootstrap.js create:upload-dir",
+    "dev": "cross-env NODE_ENV=local mwtsc --watch --run @midwayjs/mock/app.js create:upload-dir",
     "test": "cross-env NODE_ENV=unittest jest",
     "cov": "jest --coverage",
     "lint": "mwts check",
     "lint:fix": "mwts fix",
     "ci": "npm run cov",
-    "build": "mwtsc --cleanOutDir"
+    "build": "mwtsc --cleanOutDir",
+    "create:upload-dir": "ts-node create-upload-dir.ts"
   },
   "repository": {
     "type": "git",
