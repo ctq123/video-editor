@@ -86,15 +86,8 @@ export class VideoController {
     // const videoFile = files.video;
     // const audioFile = files[0];
     const audioFilePath = files.length ? files[0]?.data : null;
-    const {
-      startTime,
-      endTime,
-      filterType,
-      volume,
-      brightness,
-      blur,
-      videoPath,
-    } = fields;
+    const { startTime, endTime, fps, volume, brightness, blur, videoPath } =
+      fields;
 
     const videoFilePath = path.join(__dirname, '..', videoPath);
     if (!videoPath || !fs.existsSync(videoFilePath)) {
@@ -108,7 +101,7 @@ export class VideoController {
           audioFilePath,
           Number(startTime),
           Number(endTime),
-          filterType,
+          Number(fps),
           Number(volume),
           Number(brightness),
           Number(blur)

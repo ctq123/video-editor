@@ -12,7 +12,7 @@ const ProcessVideo: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string>('');
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [timeRange, setTimeRange] = useState<[number, number]>([0, 10]); // 使用双滑块控制时间范围
-  const [filterType, setFilterType] = useState<string>('');
+  const [fps, setFPS] = useState<string>('16');
   const [volume, setVolume] = useState<number>(1); // 默认音量
   const [brightness, setBrightness] = useState<number>(0); // 默认亮度
   const [blur, setBlur] = useState<number>(0); // 默认模糊
@@ -47,7 +47,7 @@ const goHomePage = () => {
     formData.append('videoPath', String(videoUrl));
     formData.append('startTime', String(timeRange[0]));
     formData.append('endTime', String(timeRange[1]));
-    formData.append('filterType', filterType);
+    formData.append('fps', fps);
     formData.append('volume', String(volume));
     formData.append('brightness', String(brightness));
     formData.append('blur', String(blur));
@@ -107,10 +107,11 @@ const goHomePage = () => {
         />
       </div>
 
-      {/* 选择滤镜类型 */}
-      <Select placeholder="选择滤镜" onChange={setFilterType} style={{ width: 120, marginBottom: 20 }}>
-        <Option value="lowpass">低通滤波</Option>
-        <Option value="highpass">高通滤波</Option>
+      {/* 选择帧率 */}
+      <Select placeholder="选择视频分辨率" value={fps} onChange={setFPS} style={{ width: 120, marginBottom: 20 }}>
+        <Option value="16">16 FPS</Option>
+        <Option value="32">32 FPS</Option>
+        <Option value="64">64 FPS</Option>
       </Select>
 
       {/* 音量调节 (单滑块) */}

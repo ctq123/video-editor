@@ -131,7 +131,7 @@ export class VideoService {
     audioPath: string | null, // 允许 audioPath 为 null
     startTime: number,
     endTime: number,
-    filterType: string,
+    fps: number,
     volume: number,
     brightness: number,
     blur: number
@@ -153,56 +153,62 @@ export class VideoService {
         return reject(new Error('Input file does not exist.'));
       }
 
-      const command = ffmpeg(inputPath)
-        .setStartTime(startTime)
-        .setDuration(endTime - startTime)
-        .output(outputPath);
+      const command = ffmpeg(inputPath);
+      command.setStartTime(startTime).setDuration(endTime - startTime); // 设置开始时间和持续时间
+
+      if (audioPath) {
+        command
+          .addInput(audioPath)
+          .audioFilters([
+            {
+              filter: 'volume',
+              options: [volume || 0],
+            }, // 设置音量
+            {
+              filter: 'silencedetect',
+              options: { n: '-50dB', d: 5 },
+            }, // 检测静音
+          ])
+          .audioCodec('aac') // 设置音频编解码器
+          // .videoCodec('copy') // 保持视频编解码器
+          .outputOptions('-shortest'); // 确保输出文件与最短流（视频或音频）长度相同
+      }
 
       // 添加视频滤镜
       const videoFilters: string[] = [];
 
-      if (filterType === 'lowpass') {
-        videoFilters.push('lowpass=f=3000');
-      } else if (filterType === 'highpass') {
-        videoFilters.push('highpass=f=300');
-      }
-
       // 添加亮度调节
-      if (brightness !== 0) {
-        videoFilters.push(`eq=brightness=${brightness}`);
-      }
+      videoFilters.push(`eq=brightness=${brightness || 0}`);
 
       // 添加模糊调节
-      if (blur > 0) {
-        videoFilters.push(`boxblur=${blur}`);
+      videoFilters.push(`boxblur=${blur || 0}`);
+
+      // 应用所有视频滤镜
+      if (videoFilters.length > 0) {
+        command
+          .videoCodec('libx264') // 设置视频编解码器
+          .videoFilter(videoFilters.join(','));
       }
 
-      // // 应用所有视频滤镜
-      // if (videoFilters.length > 0) {
-      //   command.videoFilter(videoFilters.join(','));
-      // }
-
-      // // 如果 audioPath 存在
-      // if (audioPath) {
-      //   command.addInput(audioPath).audioFilter(`volume=${volume || 0}`); // 设置音量
-      // }
+      command.fps(fps); // 设置帧率
 
       command
         .on('end', async () => {
+          console.log('视频处理完成！');
           // 获取视频时长
           try {
             const totalDuration = await this.getVideoDuration(outputPath);
             resolve({ outputPath, totalDuration });
           } catch (error) {
-            reject(new Error(`Error getting video duration: ${error.message}`));
+            console.error('获取视频时长失败：', error);
+            reject(error);
           }
         })
         .on('error', err => {
-          console.error('FFmpeg error:', err);
-          reject(new Error(`FFmpeg error: ${err.message}`));
+          console.error('发生错误：', err);
+          reject(err);
         })
-        // .run();
-        .mergeToFile(outputPath, outputDir);
+        .save(outputPath);
     });
   }
 }
