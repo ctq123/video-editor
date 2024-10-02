@@ -5,6 +5,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import http from '../utils/http.ts';
 import { ResponseData } from '../interface.ts';
 import Constants from '../utils/Constants.ts';
+import { Utils } from '../utils/Utils.ts';
 
 const { Option } = Select;
 const ProcessVideo: React.FC = () => {
@@ -22,10 +23,17 @@ const ProcessVideo: React.FC = () => {
   useEffect(() => {
     const { data } = location.state || {};
     console.log('路由传递参数：', location, data);
-    // handleSetTrace(data);
-    if (!data) return;
-    setVideoUrl(data.videoUrl);
-    setTimeRange([0, data.totalDuration]);
+    const pdata = Utils.getLocalStorage('processData');
+    // 路由中的参数不会过期，所以优先使用Utils.LocalStorage的参数;
+    const { videoUrl, totalDuration } = pdata || {};
+    console.log('videoUrl:', videoUrl, totalDuration);
+    if (!videoUrl) {
+      goHomePage();
+      return;
+    };
+    
+    setVideoUrl(videoUrl);
+    setTimeRange([0, Math.floor(totalDuration)]);
 }, []);
 
 const goHomePage = () => {
@@ -55,7 +63,9 @@ const goHomePage = () => {
       if (data.success) {
         message.success('视频处理成功');
         // 这里可以添加视频预览逻辑
-        setVideoUrl(data.data);
+        const { videoUrl, totalDuration } = data.data;
+        setVideoUrl(videoUrl);
+        setTimeRange([0, Math.floor(totalDuration)]);
       } else {
         message.error(data.message || '视频处理失败');
       }

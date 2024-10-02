@@ -156,8 +156,7 @@ export class VideoService {
       const command = ffmpeg(inputPath)
         .setStartTime(startTime)
         .setDuration(endTime - startTime)
-        .output(outputPath)
-        .outputOptions('-y'); // 确保覆盖现有文件
+        .output(outputPath);
 
       // 添加视频滤镜
       const videoFilters: string[] = [];
@@ -178,22 +177,22 @@ export class VideoService {
         videoFilters.push(`boxblur=${blur}`);
       }
 
-      // 应用所有视频滤镜
-      if (videoFilters.length > 0) {
-        command.videoFilter(videoFilters.join(','));
-      }
+      // // 应用所有视频滤镜
+      // if (videoFilters.length > 0) {
+      //   command.videoFilter(videoFilters.join(','));
+      // }
 
-      // 如果 audioPath 存在
-      if (audioPath) {
-        command.addInput(audioPath).audioFilter(`volume=${volume || 0}`); // 设置音量
-      }
+      // // 如果 audioPath 存在
+      // if (audioPath) {
+      //   command.addInput(audioPath).audioFilter(`volume=${volume || 0}`); // 设置音量
+      // }
 
       command
         .on('end', async () => {
           // 获取视频时长
           try {
-            // const totalDuration = await this.getVideoDuration(outputPath);
-            resolve({ outputPath, totalDuration: 19 });
+            const totalDuration = await this.getVideoDuration(outputPath);
+            resolve({ outputPath, totalDuration });
           } catch (error) {
             reject(new Error(`Error getting video duration: ${error.message}`));
           }
@@ -202,7 +201,8 @@ export class VideoService {
           console.error('FFmpeg error:', err);
           reject(new Error(`FFmpeg error: ${err.message}`));
         })
-        .mergeToFile(outputPath);
+        // .run();
+        .mergeToFile(outputPath, outputDir);
     });
   }
 }

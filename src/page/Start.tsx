@@ -4,6 +4,7 @@ import { Upload, Button, message, Spin } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import http from '../utils/http';
 import { ResponseData } from '../interface.ts';
+import { Utils } from '../utils/Utils.ts';
 
 const Start: React.FC = () => {
   const [fileList, setFileList] = useState<File[]>([]);
@@ -51,6 +52,7 @@ const Start: React.FC = () => {
 
       if (data.success) {
         message.success('视频合并成功');
+        Utils.setLocalStorage('processData', data, 5 * 60);
         // 这里可以添加合并后视频预览逻辑
         navigate('/process', { state: { data: data.data } });
       } else {
