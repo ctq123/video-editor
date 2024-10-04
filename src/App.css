@@ -75,15 +75,10 @@
 }
 
 .bottom-fixed button {
-  background-color: green;
-  color: white;
-  border: none;
-  padding: 10px 20px;
   cursor: pointer;
 }
 
 .bottom-fixed button:disabled {
-  background-color: #ccc;
   cursor: not-allowed;
 }
 

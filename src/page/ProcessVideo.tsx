@@ -102,8 +102,7 @@ const ProcessVideo: React.FC = () => {
 
   return (
     <div style={{ padding: '30px' }}>
-      <h1>视频编辑器</h1>
-
+      <h2>视频编辑器</h2>
       {/* 处理后的视频预览 */}
       <div style={{ marginTop: '20px' }}>
         <h3>处理后的视频预览：</h3>
@@ -199,7 +198,7 @@ const ProcessVideo: React.FC = () => {
         </Select>
       </div>
 
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 100 }}>
         <span>视频压缩率（范围 0-51，值越低质量越高）: </span>
         <Slider
           min={0}
@@ -210,7 +209,7 @@ const ProcessVideo: React.FC = () => {
         />
       </div>
 
-      <div className='flex'>
+      <div className='bottom-fixed flex-center'>
         <Button
           type="primary"
           onClick={handleProcessVideo}
