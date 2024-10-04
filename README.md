@@ -10,7 +10,7 @@
 ## 技术栈
 前端：React + TypeScript + Vite + Axios + Ant Design + React Hooks
 
-后端：Node.js + ffmpeg
+后端：Node.js + ffmpeg + midwayjs
 
 
 ## 项目启动
@@ -25,6 +25,8 @@ yarn
 cd server
 yarn dev
 ```
+
+`每隔10分钟，后端 upload 文件自动超时无效`
 
 ### 启动前端
 
