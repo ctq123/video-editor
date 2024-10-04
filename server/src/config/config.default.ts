@@ -19,6 +19,10 @@ export default {
       '.mkv', // MKV 视频
       '.mp3', // MP3 音频
       '.wav', // WAV 音频
+      '.ass', // ASS 字幕文件
+      '.srt', // SRT 字幕文件
+      '.vtt', // VTT 字幕文件
+      '.md', // Markdown 文件
       '.png', // PNG 图片
       '.jpg',
       '.jpeg', // JPEG 图片
@@ -49,7 +53,7 @@ export default {
     ],
     // tmpdir: join(tmpdir(), 'midway-upload'), // 上传临时目录
     tmpdir: join(__dirname, '../upload'), // 上传临时目录
-    cleanTimeout: 5 * 60 * 1000, // 清理超时
+    cleanTimeout: 10 * 60 * 1000, // 清理超时
     // match: /\/api\/upload/, // 匹配上传接口
     allowFieldsDuplication: true, // 允许字段重复
   },

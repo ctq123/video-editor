@@ -129,12 +129,17 @@ export class VideoService {
   async processVideo(
     inputPath: string,
     audioPath: string | null, // 允许 audioPath 为 null
+    subtitlePath: string | null,
     startTime: number,
     endTime: number,
     fps: number,
     volume: number,
     brightness: number,
-    blur: number
+    blur: number,
+    watermarkText: string | null, // 文本水印
+    videoWidth: number,
+    videoHeight: number,
+    crfValue: number
   ): Promise<{ outputPath: string; totalDuration: number }> {
     const outputDir = path.join(__dirname, '../upload');
 
@@ -155,6 +160,19 @@ export class VideoService {
 
       const command = ffmpeg(inputPath);
       command.setStartTime(startTime).setDuration(endTime - startTime); // 设置开始时间和持续时间
+
+      if (videoHeight > 0 && videoWidth > 0) {
+        command.size(`${videoWidth}x${videoHeight}`).autopad(); // 设置视频尺寸
+        // command.outputOptions(`-vf scale=${videoWidth}:${videoHeight}`);
+      }
+
+      // 设置压缩率
+      command.outputOptions(`-crf ${crfValue}`);
+
+      if (subtitlePath) {
+        // console.log('Subtitle path:', subtitlePath); // Debug subtitle path
+        command.outputOptions('-vf', `subtitles=${subtitlePath}`); // 添加字幕
+      }
 
       if (audioPath) {
         command
@@ -182,6 +200,13 @@ export class VideoService {
 
       // 添加模糊调节
       videoFilters.push(`boxblur=${blur || 0}`);
+
+      // 添加文本水印
+      if (watermarkText) {
+        console.log('watermarkText', watermarkText);
+        const textFilter = `drawtext=text='${watermarkText}':fontcolor=white:fontsize=${24}:x=(W-w)/2:y=(H-h)/2`;
+        videoFilters.push(textFilter);
+      }
 
       // 应用所有视频滤镜
       if (videoFilters.length > 0) {

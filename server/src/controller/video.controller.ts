@@ -85,9 +85,25 @@ export class VideoController {
   async processVideo(@Files() files, @Fields() fields) {
     // const videoFile = files.video;
     // const audioFile = files[0];
-    const audioFilePath = files.length ? files[0]?.data : null;
-    const { startTime, endTime, fps, volume, brightness, blur, videoPath } =
-      fields;
+    // console.log('processVideo', files, fields);
+
+    const audioFilePath =
+      files.filter(file => file.fieldName === 'audio')[0]?.data || null;
+    const subtitlePath =
+      files.filter(file => file.fieldName === 'subtitle')[0]?.data || null;
+    const {
+      videoPath,
+      startTime,
+      endTime,
+      fps,
+      volume,
+      brightness,
+      blur,
+      watermarkText,
+      videoWidth,
+      videoHeight,
+      crfValue,
+    } = fields;
 
     const videoFilePath = path.join(__dirname, '..', videoPath);
     if (!videoPath || !fs.existsSync(videoFilePath)) {
@@ -99,12 +115,17 @@ export class VideoController {
         await this.videoService.processVideo(
           videoFilePath,
           audioFilePath,
+          subtitlePath,
           Number(startTime),
           Number(endTime),
           Number(fps),
           Number(volume),
           Number(brightness),
-          Number(blur)
+          Number(blur),
+          watermarkText,
+          Number(videoWidth),
+          Number(videoHeight),
+          Number(crfValue)
         );
 
       const videoUrl = `/upload/${path.basename(outputPath)}`;
