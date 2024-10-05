@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人脸替换示例</title>
+  <script src="https://docs.opencv.org/4.5.3/opencv.js" async></script>
+</head>
+
+<body>
+  <h1>视频中的头像替换</h1>
+  <input type="file" id="videoUpload" accept="video/*">
+  <video id="videoPlayer" width="600" controls></video>
+  <canvas id="canvas" width="600" height="400"></canvas>
+  <img id="avatar" src="avatar.png"> <!-- 替换的头像 -->
+
+  <script>
+    let video = document.getElementById('videoPlayer');
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d', { willReadFrequently: true });
+    let classifier;
+
+    window.onload = () => {
+      cv.onRuntimeInitialized = () => {
+        loadClassifier(); // 加载分类器
+        video.addEventListener('play', () => {
+          requestAnimationFrame(processVideo);
+        });
+      };
+    };
+
+    function loadClassifier() {
+      classifier = new cv.CascadeClassifier();
+      let success = classifier.load('haarcascade_frontalface_default.xml');
+
+      if (success) {
+        console.log('分类器加载成功');
+      } else {
+        console.error('分类器加载失败');
+      }
+    }
+
+
+    function processVideo() {
+      try {
+        if (video.paused || video.ended) {
+          return;
+        }
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        let src = cv.imread(canvas);
+        let gray = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+        let faces = new cv.RectVector();
+        classifier.detectMultiScale(gray, faces, 1.1, 3, 0, new cv.Size());
+
+        // 替换人脸
+        for (let i = 0; i < faces.size(); i++) {
+          let face = faces.get(i);
+          let avatar = document.getElementById('avatar');
+
+          let scale = face.width / avatar.width;
+          let x = face.x;
+          let y = face.y;
+          let width = avatar.width * scale;
+          let height = avatar.height * scale;
+
+          ctx.drawImage(avatar, x, y, width, height);
+        }
+
+        src.delete();
+        gray.delete();
+        faces.delete();
+      } catch (error) {
+        console.error('处理视频时出错:', error);
+      }
+
+      requestAnimationFrame(processVideo);
+    }
+
+    document.getElementById('videoUpload').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      const url = URL.createObjectURL(file);
+      video.src = url;
+      video.play();
+    });
+  </script>
+</body>
+
+</html>

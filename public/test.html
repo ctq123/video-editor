@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频剪辑器 - 人脸替换</title>
+    <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/opencv/4.5.1/opencv.js" async></script>
+</head>
+<body>
+    <h1>视频剪辑器 - 人脸替换</h1>
+    <input type="file" id="videoUpload" accept="video/*">
+    <input type="file" id="faceUpload" accept="image/*">
+    <video id="videoPlayer" class="video-js" controls width="600"></video>
+    <button id="replaceFace">替换人脸</button>
+
+    <script>
+        const videoUpload = document.getElementById('videoUpload');
+        const faceUpload = document.getElementById('faceUpload');
+        const videoPlayer = videojs('videoPlayer');
+
+        videoUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const url = URL.createObjectURL(file);
+            videoPlayer.src({ type: file.type, src: url });
+        });
+
+        document.getElementById('replaceFace').addEventListener('click', () => {
+            // 调用后端 API 进行人脸替换
+            const videoFile = videoUpload.files[0];
+            const faceFile = faceUpload.files[0];
+
+            const formData = new FormData();
+            formData.append('video', videoFile);
+            formData.append('face', faceFile);
+
+            fetch('http://localhost:3000/api/replace-face', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('上传失败');
+                return response.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                videoPlayer.src({ type: 'video/mp4', src: url });
+                videoPlayer.load();
+            }).catch(error => {
+                console.error('替换失败:', error);
+            });
+        });
+    </script>
+</body>
+</html>
