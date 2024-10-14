@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Button, message, Spin } from 'antd';
+import { Upload, Button, message, Card } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import http from '../utils/http';
 import { ResponseData } from '../interface.ts';
@@ -16,18 +16,16 @@ const Start: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFileChange = (info: any) => {
     console.log('handleFileChange', info);
-    // setFileList(file?.fileList);
-    // setFile1(info.file);
-    if (!info.fileList || info.fileList.length === 0) { 
-      setFileList([]);
-    } else {
-      setFileList((prev) => [...prev, info.file]);
-    }
+    setFileList((prev) => [...prev, info.file]);
+  };
+
+  const handleRemove = (file: File) => {
+    setFileList(prev => prev.filter(item => item !== file));
   };
 
   // 处理视频上传及剪辑操作
   const handleUpload = async () => {
-    
+
     if (!fileList || !fileList.length) {
       message.error("请选择有效的视频");
       return;
@@ -66,28 +64,52 @@ const Start: React.FC = () => {
     }
   };
 
+  console.log('fileList', fileList);
+
   return (
     <div style={{ padding: '30px' }}>
       <h1>视频编辑器</h1>
 
-      {/* 文件上传 */}
       <Upload
-        beforeUpload={() => false}  // 不自动上传，先存储文件
-        multiple
-        onChange={handleFileChange}
-        accept="video/*"
-      >
-        <Button icon={<UploadOutlined />}>选择多个视频文件</Button>
-      </Upload>
+                accept="video/*"
+                showUploadList={false}
+                onChange={handleFileChange}
+                beforeUpload={() => false} // 禁止自动上传，改为手动处理
+            >
+                <Button icon={<UploadOutlined />}>上传多个视频</Button>
+            </Upload>
 
+            <div className="flex mt-2">
+                {fileList.map((file, index) => (
+                    <Card
+                        key={index}
+                        style={{
+                            width: 200,
+                            marginRight: 20,
+                            marginBottom: 20,
+                        }}
+                        title={`视频 ${index + 1}`}
+                        extra={<Button onClick={() => handleRemove(file)}>删除</Button>}
+                    >
+                        <video
+                            controls
+                            style={{ width: '100%', maxHeight: '100px' }}
+                        >
+                            <source src={URL.createObjectURL(file)} type={file.type} />
+                            您的浏览器不支持视频标签。
+                        </video>
+                    </Card>
+                ))}
+            </div>
       {/* 上传按钮 */}
       <Button
         type="primary"
         onClick={handleUpload}
         style={{ marginTop: '20px' }}
+        loading={loading}
         disabled={loading || !fileList.length}
       >
-        {loading ? <Spin /> : '上传并处理视频'}
+        {'上传并处理视频'}
       </Button>
     </div>
   );

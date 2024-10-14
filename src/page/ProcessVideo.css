@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+video {
+  width: 600px; /* 固定宽度 */
+  max-height: 400px; /* 限制最大高度 */
+  height: auto; /* 按比例缩放 */
+  margin-bottom: 20px;
+  overflow: hidden; /* 防止溢出 */
+}
+
+.controls {
+  margin-bottom: 10px;
+}
+
+.timeline {
+  width: 600px;
+  height: 50px; /* 设置轨道高度为50px */
+  border: 1px solid #000;
+  position: relative;
+  overflow-x: auto; /* 允许横向滚动 */
+  white-space: nowrap; /* 防止换行 */
+  margin-bottom: 10px;
+}
+
+.video-frame {
+  display: inline-block;
+  height: 50px; /* 设置轨道缩略图高度 */
+  cursor: pointer;
+  position: relative;
+  min-width: 50px; /* 设置帧的最小宽度为50px */
+}
+
+.cut-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: red;
+}
