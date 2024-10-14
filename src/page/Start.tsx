@@ -71,36 +71,36 @@ const Start: React.FC = () => {
       <h1>视频编辑器</h1>
 
       <Upload
-                accept="video/*"
-                showUploadList={false}
-                onChange={handleFileChange}
-                beforeUpload={() => false} // 禁止自动上传，改为手动处理
-            >
-                <Button icon={<UploadOutlined />}>上传多个视频</Button>
-            </Upload>
+        accept="video/*"
+        showUploadList={false}
+        onChange={handleFileChange}
+        beforeUpload={() => false} // 禁止自动上传，改为手动处理
+      >
+        <Button icon={<UploadOutlined />}>上传多个视频</Button>
+      </Upload>
 
-            <div className="flex mt-2">
-                {fileList.map((file, index) => (
-                    <Card
-                        key={index}
-                        style={{
-                            width: 200,
-                            marginRight: 20,
-                            marginBottom: 20,
-                        }}
-                        title={`视频 ${index + 1}`}
-                        extra={<Button onClick={() => handleRemove(file)}>删除</Button>}
-                    >
-                        <video
-                            controls
-                            style={{ width: '100%', maxHeight: '100px' }}
-                        >
-                            <source src={URL.createObjectURL(file)} type={file.type} />
-                            您的浏览器不支持视频标签。
-                        </video>
-                    </Card>
-                ))}
-            </div>
+      <div className="flex mt-2">
+        {fileList.map((file, index) => (
+          <Card
+            key={index}
+            style={{
+              width: 200,
+              marginRight: 20,
+              marginBottom: 20,
+            }}
+            title={`视频 ${index + 1}`}
+            extra={<Button onClick={() => handleRemove(file)}>删除</Button>}
+          >
+            <video
+              controls
+              style={{ width: '100%', maxHeight: '100px' }}
+            >
+              <source src={URL.createObjectURL(file)} type={file.type} />
+              您的浏览器不支持视频标签。
+            </video>
+          </Card>
+        ))}
+      </div>
       {/* 上传按钮 */}
       <Button
         type="primary"

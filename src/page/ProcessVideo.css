@@ -42,3 +42,7 @@ video {
   width: 2px;
   background: red;
 }
+
+.video-control {
+  width: 600px;
+}

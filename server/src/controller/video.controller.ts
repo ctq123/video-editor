@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Inject,
   Files,
@@ -20,6 +21,24 @@ export class VideoController {
 
   @Inject()
   videoService: VideoService;
+
+  @Get('/:filename')
+  async getVideo(ctx) {
+    const filename = ctx.params.filename;
+    const videoPath = path.join(__dirname, '../upload', filename);
+
+    console.log('Requested File Path:', videoPath);
+
+    if (fs.existsSync(videoPath)) {
+      ctx.body = fs.createReadStream(videoPath);
+      ctx.type = 'video/mp4'; // 根据实际图片类型设置
+      console.log('Serving File:', filename);
+    } else {
+      ctx.status = 404;
+      ctx.body = 'File not found';
+      console.log('File Not Found:', filename);
+    }
+  }
 
   // @Post('/upload', { middleware: [UploadMiddleware] })
   @Post('/upload')
@@ -68,10 +87,11 @@ export class VideoController {
       const { outputPath, totalDuration } = await this.videoService.mergeVideos(
         videoPaths
       );
-      const videoUrl = `/upload/${path.basename(outputPath)}`;
+      const fileName = path.basename(outputPath);
+      const videoUrl = `/upload/${fileName}`;
       return {
         success: true,
-        data: { videoUrl, totalDuration },
+        data: { videoUrl, fileName, totalDuration },
         message: '视频合并成功',
       };
     } catch (error) {

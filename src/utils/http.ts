@@ -34,8 +34,15 @@ axiosInstance.interceptors.request.use(
 // 响应拦截器
 axiosInstance.interceptors.response.use(
   (response) => {
-    // 对响应数据做点什么
-    return response.data; // 直接返回数据，简化调用
+    // 获取响应的 Content-Type
+    const contentType = response.headers['content-type'];
+
+    // 如果是文件类型，返回整个 response 对象
+    if (contentType && (contentType.includes('application/octet-stream') || contentType.includes('video') || contentType.includes('image') || contentType.includes('application/pdf'))) {
+        return response; // 返回原生 response
+    }
+    // 非文件类型，返回 response.data
+    return response.data;
   },
   (error) => {
     // 对响应错误做点什么

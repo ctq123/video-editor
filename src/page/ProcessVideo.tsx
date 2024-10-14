@@ -91,6 +91,7 @@ const ProcessVideo: React.FC = () => {
     if (!videoRef.current || !canvasRef.current) return;
 
     const video = videoRef.current;
+    // video.crossOrigin = "anonymous"; // 设置跨域
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
@@ -118,6 +119,7 @@ const ProcessVideo: React.FC = () => {
             // 添加帧到时间轴
             const frameElement = document.createElement('img');
             frameElement.src = frameImage;
+            // frameElement.crossOrigin = "anonymous";
             frameElement.style.width = `${Math.max(50, 600 / totalFrames)}px`;
             frameElement.className = 'video-frame';
             frameElement.dataset.time = time.toString();
@@ -253,6 +255,7 @@ const ProcessVideo: React.FC = () => {
       {/* <Upload beforeUpload={(file) => { setVideoFile(file); return false; }} accept="video/*">
         <Button icon={<UploadOutlined />}>选择视频文件</Button>
       </Upload> */}
+      <div className='video-control'>
       <div style={{ marginBottom: 20 }}>
         <div>字幕轨道: </div>
         <Upload beforeUpload={beforeSubtitleUpload} onRemove={() => setSubtitleFile(null)} accept=".srt,.vtt,.ass">
@@ -348,6 +351,7 @@ const ProcessVideo: React.FC = () => {
           value={crfValue}
           onChange={(value) => setCRFValue(value)}
         />
+      </div>
       </div>
 
       <div className='bottom-fixed flex-center'>
