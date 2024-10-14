@@ -53,7 +53,7 @@ export default {
     ],
     // tmpdir: join(tmpdir(), 'midway-upload'), // 上传临时目录
     tmpdir: join(__dirname, '../upload'), // 上传临时目录
-    cleanTimeout: 10 * 60 * 1000, // 清理超时
+    cleanTimeout: 60 * 60 * 1000, // 超时清理
     // match: /\/api\/upload/, // 匹配上传接口
     allowFieldsDuplication: true, // 允许字段重复
   },
