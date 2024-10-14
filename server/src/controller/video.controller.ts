@@ -148,10 +148,11 @@ export class VideoController {
           Number(crfValue)
         );
 
-      const videoUrl = `/upload/${path.basename(outputPath)}`;
+      const fileName = path.basename(outputPath);
+      const videoUrl = `/upload/${fileName}`;
       return {
         success: true,
-        data: { videoUrl, totalDuration },
+        data: { videoUrl, fileName, totalDuration },
         message: '处理成功',
       };
     } catch (error) {

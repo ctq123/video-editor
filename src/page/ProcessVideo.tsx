@@ -42,7 +42,7 @@ const ProcessVideo: React.FC = () => {
     // 路由中的参数不会过期，所以优先使用Utils.LocalStorage的参数;
     const { videoUrl, fileName, totalDuration } = pdata || {};
     console.log('videoUrl:', videoUrl, totalDuration);
-    if (!videoUrl || !fileName) {
+    if (!fileName) {
       goHomePage();
       return;
     };
@@ -50,7 +50,7 @@ const ProcessVideo: React.FC = () => {
     setVideoUrl(videoUrl);
     setTimeRange([0, totalDuration]);
 
-    init(fileName); // 初始化
+    getRemoteVideo(fileName); // 初始化
   }, []);
 
   // 监听视频元数据加载
@@ -71,7 +71,7 @@ const ProcessVideo: React.FC = () => {
     }
   }, [videoFile]);
 
-  const init = async (fileName: string) => {
+  const getRemoteVideo = async (fileName: string) => {
     if (!fileName) return;
     // 清空时间轴和帧数据
     if (timelineRef.current) {
@@ -239,8 +239,9 @@ const ProcessVideo: React.FC = () => {
       if (data.success) {
         message.success('视频处理成功');
         // 这里可以添加视频预览逻辑
-        const { videoUrl, totalDuration } = data.data;
-        setVideoUrl(videoUrl);
+        const { fileName, totalDuration } = data.data;
+        // setVideoUrl(videoUrl);
+        getRemoteVideo(fileName);
         setTimeRange([0, Math.floor(totalDuration)]);
       } else {
         message.error(data.message || '视频处理失败');
