@@ -3,6 +3,7 @@
 - 视频上传功能，支持拖拽上传和点击上传
 - 视频分辨率、视频裁剪、视频音效、视频字幕、视频水印、视频滤镜（视频亮度、模糊度）、视频转码、视频压缩、视频分割、视频合并、视频导出等功能
 
+<img width="1425" alt="image" src="https://github.com/user-attachments/assets/efacc2b1-57f9-4cef-8052-e08749a4f377">
 
 ## 环境要求
 - Node.js 20.0.0 或更高版本
