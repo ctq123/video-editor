@@ -6,12 +6,23 @@
   background-color: #f0f0f0; /* 设置背景色 */
 }
 
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
 .flex {
   display: flex;
 }
 
 .flex-column {
   flex-direction: column;
+}
+
+.col-center {
+  align-items: center;
 }
 
 .center {

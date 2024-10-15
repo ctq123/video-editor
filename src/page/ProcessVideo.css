@@ -1,8 +1,12 @@
-.container {
+.video-view {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+}
+
+.video-control {
+  width: 400px;
+  margin-left: 20px;
 }
 
 video {
@@ -43,6 +47,4 @@ video {
   background: red;
 }
 
-.video-control {
-  width: 600px;
-}
+

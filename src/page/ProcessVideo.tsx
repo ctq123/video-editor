@@ -267,25 +267,27 @@ const ProcessVideo: React.FC = () => {
 
 
   return (
-    <div className="container">
+    <div className="container flex-container">
       <h2>视频编辑器</h2>
-      {/* 处理后的视频预览 */}
 
-      {/* 视频展示区 */}
-      <video ref={videoRef} controls />
+      <div className='flex'>
+      <div className='video-view'>
+        {/* 视频展示区 */}
+        <video ref={videoRef} controls />
 
-      {/* 时间轴轨道 */}
-      <div ref={timelineRef} className="timeline"></div>
+        {/* 时间轴轨道 */}
+        <div ref={timelineRef} className="timeline"></div>
 
-      {/* 操作控制区 */}
-      {/* <div className="controls">
-          <button onClick={cutVideo}>裁剪</button>
-          <button onClick={() => changeSpeed(2)}>2x 速度</button>
-          <button onClick={() => changeSpeed(1)}>正常速度</button>
-      </div> */}
+        {/* 操作控制区 */}
+        {/* <div className="controls">
+            <button onClick={cutVideo}>裁剪</button>
+            <button onClick={() => changeSpeed(2)}>2x 速度</button>
+            <button onClick={() => changeSpeed(1)}>正常速度</button>
+        </div> */}
 
-      {/* 隐藏canvas用于绘制帧 */}
-      <canvas ref={canvasRef} style={{ display: 'none' }} />
+        {/* 隐藏canvas用于绘制帧 */}
+        <canvas ref={canvasRef} style={{ display: 'none' }} />
+      </div>
 
       {/* <Upload beforeUpload={(file) => { setVideoFile(file); return false; }} accept="video/*">
         <Button icon={<UploadOutlined />}>选择视频文件</Button>
@@ -387,6 +389,7 @@ const ProcessVideo: React.FC = () => {
             onChange={(value) => setCRFValue(value)}
           />
         </div>
+      </div>
       </div>
 
       <div className='bottom-fixed flex-center'>

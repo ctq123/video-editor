@@ -64,7 +64,7 @@ const Start: React.FC = () => {
   console.log('fileList', fileList);
 
   return (
-    <div style={{ padding: '30px' }}>
+    <div className='container flex-container'>
       <h1>视频编辑器</h1>
 
       <Upload
