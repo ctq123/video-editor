@@ -67,7 +67,7 @@ const UploadView: React.FC<UploadViewProps> = ({ successCallback }) => {
     }
   };
 
-  console.log('fileList', fileList);
+  // console.log('fileList', fileList);
 
   return (
     <>
