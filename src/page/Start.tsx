@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Button, message, Card } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import http from '../utils/http';
 import { ResponseData } from '../interface.ts';
 import { Utils } from '../utils/Utils.ts';
@@ -73,7 +73,10 @@ const Start: React.FC = () => {
         onChange={handleFileChange}
         beforeUpload={() => false} // 禁止自动上传，改为手动处理
       >
-        <Button icon={<UploadOutlined />}>上传多个视频</Button>
+        <button style={{ border: 0, background: 'none' }} type="button">
+          <PlusOutlined />
+          <div style={{ marginTop: 8 }}>添加视频</div>
+        </button>
       </Upload>
 
       <div className="flex mt-2">
