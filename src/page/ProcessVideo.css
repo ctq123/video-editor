@@ -1,17 +1,75 @@
-.video-view {
+.bg {
+  background-color: white;
+}
+
+.video-process-view {
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 400px;
+  padding-bottom: 20px;
+}
+
+.upload-view {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
 }
 
-.video-control {
+.video-view {
+  margin: 0px 20px;
+  width: 350px;
+}
+
+.control-view {
   width: 400px;
-  margin-left: 20px;
+  height: 100%;
+}
+
+.block {
+  padding: 8px;
+  border: 1px solid #e3e3e3;
+  height: 100%;
+}
+
+.block-content {
+  padding: 8px;
+}
+
+.block-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.block-desc {
+  margin-top: 10px;
+  color: grey;
+  font-size: 10px;
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.video-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
 }
 
 video {
-  width: 600px; /* 固定宽度 */
-  max-height: 400px; /* 限制最大高度 */
+  width: 300px; /* 固定宽度 */
+  max-height: 300px; /* 限制最大高度 */
   height: auto; /* 按比例缩放 */
   margin-bottom: 20px;
   overflow: hidden; /* 防止溢出 */
@@ -21,10 +79,33 @@ video {
   margin-bottom: 10px;
 }
 
+.control-content {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.track-view {
+  position: relative;
+  box-sizing: border-box;
+  margin-top: 20px;
+  height: 200px;
+  width: 100%;
+  padding: 8px;
+}
+
+.track-view-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 .timeline {
-  width: 600px;
+  width: 100%;
   height: 50px; /* 设置轨道高度为50px */
-  border: 1px solid #000;
+  border: 8px solid #272727;
+  border-left: transparent;
+  border-right: transparent;
   position: relative;
   overflow-x: auto; /* 允许横向滚动 */
   white-space: nowrap; /* 防止换行 */
@@ -46,5 +127,4 @@ video {
   width: 2px;
   background: red;
 }
-
 

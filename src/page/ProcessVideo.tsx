@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+// import { useNavigate, useLocation } from 'react-router-dom';
 import { Upload, Button, Slider, Select, message, Spin, Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import UploadView from '../components/UploadView.tsx';
 import http from '../utils/http.ts';
-import { ResponseData } from '../interface.ts';
+import { ResponseData, VideoData } from '../interface.ts';
 // import Constants from '../utils/Constants.ts';
-import { Utils } from '../utils/Utils.ts';
+// import { Utils } from '../utils/Utils.ts';
 import './ProcessVideo.css';
 
 const { Option } = Select;
@@ -30,28 +31,9 @@ const ProcessVideo: React.FC = () => {
   const [frames, setFrames] = useState<{ time: number; image: string }[]>([]);// 本地保存数据帧，方便操作
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [cutPoints, setCutPoints] = useState<{ time: number; cutLine: HTMLDivElement }[]>([]);
-  const navigate = useNavigate();
-  const location = useLocation();
+  // const navigate = useNavigate();
+  // const location = useLocation();
   const frameRate = 1; // 每秒提取一帧
-  const frameWidth = 600;// 视频轨道宽度
-
-  useEffect(() => {
-    const { data } = location.state || {};
-    console.log('路由传递参数：', location, data);
-    const pdata = Utils.getLocalStorage('processData');
-    // 路由中的参数不会过期，所以优先使用Utils.LocalStorage的参数;
-    const { videoUrl, fileName, totalDuration } = pdata || {};
-    console.log('videoUrl:', videoUrl, totalDuration);
-    if (!fileName) {
-      goHomePage();
-      return;
-    };
-
-    setVideoUrl(videoUrl);
-    setTimeRange([0, totalDuration]);
-
-    getRemoteVideo(fileName); // 初始化
-  }, []);
 
   // 监听视频元数据加载
   useEffect(() => {
@@ -83,8 +65,20 @@ const ProcessVideo: React.FC = () => {
     getVideo(fileName);
   }
 
-  const goHomePage = () => {
-    navigate('/');
+  // const goHomePage = () => {
+  //   navigate('/');
+  // }
+
+  const handleUploadCallback = (data: VideoData) => {
+    const { videoUrl, fileName, totalDuration } = data || {};
+    console.log('videoUrl:', videoUrl, totalDuration);
+    if (!fileName) {
+      return;
+    };
+    setVideoUrl(videoUrl);
+    setTimeRange([0, totalDuration]);
+
+    getRemoteVideo(fileName); // 初始化
   }
 
   const getVideo = (fileName: string) => {
@@ -118,6 +112,7 @@ const ProcessVideo: React.FC = () => {
 
     const totalFrames = Math.floor(video.duration * frameRate); // 总帧数
     let currentFrame = 0;
+    const frameWidth = window.innerWidth - 56;// 视频轨道宽度
 
     const frameInterval = setInterval(() => {
       if (currentFrame < totalFrames) {
@@ -267,39 +262,34 @@ const ProcessVideo: React.FC = () => {
 
 
   return (
-    <div className="container flex-container">
-      <h2>视频编辑器</h2>
-
-      <div className='flex'>
-      <div className='video-view'>
+    <div className="container flex-container bg">
+      {/* <h2>视频编辑器</h2> */}
+      <div className='video-process-view'>
+      <div className='upload-view block'>
+        <UploadView successCallback={handleUploadCallback} />
+      </div>
+      <div className='video-view block'>
+        <div className='block-title'>播放器</div>
         {/* 视频展示区 */}
-        <video ref={videoRef} controls />
-
-        {/* 时间轴轨道 */}
-        <div ref={timelineRef} className="timeline"></div>
-
-        {/* 操作控制区 */}
-        {/* <div className="controls">
-            <button onClick={cutVideo}>裁剪</button>
-            <button onClick={() => changeSpeed(2)}>2x 速度</button>
-            <button onClick={() => changeSpeed(1)}>正常速度</button>
-        </div> */}
-
-        {/* 隐藏canvas用于绘制帧 */}
-        <canvas ref={canvasRef} style={{ display: 'none' }} />
+        <div className='block-content video-content'>
+          <video ref={videoRef} controls />
+          </div>
+        
       </div>
 
       {/* <Upload beforeUpload={(file) => { setVideoFile(file); return false; }} accept="video/*">
         <Button icon={<UploadOutlined />}>选择视频文件</Button>
       </Upload> */}
-      <div className='video-control'>
-        <div style={{ marginBottom: 20 }}>
+      <div className='control-view block'>
+      <div className='block-title'>视频参数</div>
+      <div className='block-content control-content'>
+        <div>
           <div>字幕轨道: </div>
           <Upload beforeUpload={beforeSubtitleUpload} onRemove={() => setSubtitleFile(null)} accept=".srt,.vtt,.ass">
             <Button icon={<UploadOutlined />}>上传字幕文件</Button>
           </Upload>
         </div>
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <div>音频轨道: </div>
           <Upload beforeUpload={(file) => { setAudioFile(file); return false; }} onRemove={() => setAudioFile(null)} accept="audio/*">
             <Button icon={<UploadOutlined />}>选择音频文件</Button>
@@ -319,7 +309,7 @@ const ProcessVideo: React.FC = () => {
         />
       </div> */}
 
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <span>视频质量: </span>
           {/* 选择帧率 */}
           <Select placeholder="选择视频质量" value={fps} onChange={setFPS} style={{ width: 120, marginBottom: 20 }}>
@@ -330,7 +320,7 @@ const ProcessVideo: React.FC = () => {
         </div>
 
         {/* 音量调节 (单滑块) */}
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <span>音量: </span>
           <Slider
             min={0}
@@ -342,7 +332,7 @@ const ProcessVideo: React.FC = () => {
         </div>
 
         {/* 亮度调节 (单滑块) */}
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <span>亮度: </span>
           <Slider
             min={-1}
@@ -354,7 +344,7 @@ const ProcessVideo: React.FC = () => {
         </div>
 
         {/* 模糊调节 (单滑块) */}
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <span>模糊: </span>
           <Slider
             min={0}
@@ -365,12 +355,12 @@ const ProcessVideo: React.FC = () => {
           />
         </div>
 
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <span>水印: </span>
           <TextArea placeholder="Autosize height based on content lines" autoSize value={watermarkText} onChange={(e) => setWatermarkText(e.target.value)} />
         </div>
 
-        <div style={{ marginBottom: 20 }}>
+        <div>
           <span>视频尺寸: </span>
           <Select placeholder="选择视频尺寸" value={videoWH} onChange={setVideoWH} style={{ width: 120, marginBottom: 20 }}>
             <Option value="640x480">640 x 480</Option>
@@ -379,7 +369,7 @@ const ProcessVideo: React.FC = () => {
           </Select>
         </div>
 
-        <div style={{ marginBottom: 100 }}>
+        <div>
           <span>视频压缩率（范围 0-51，值越低质量越高）: </span>
           <Slider
             min={0}
@@ -389,7 +379,30 @@ const ProcessVideo: React.FC = () => {
             onChange={(value) => setCRFValue(value)}
           />
         </div>
+
+        <div>0</div>
       </div>
+      </div>
+      </div>
+
+      <div className='track-view block'>
+        <div className='actions'>
+          <div>操作</div>
+        </div>
+        <div className='track-view-content flex-center'>
+          {/* 时间轴轨道 */}
+        <div ref={timelineRef} className="timeline"></div>
+
+        {/* 操作控制区 */}
+        {/* <div className="controls">
+            <button onClick={cutVideo}>裁剪</button>
+            <button onClick={() => changeSpeed(2)}>2x 速度</button>
+            <button onClick={() => changeSpeed(1)}>正常速度</button>
+        </div> */}
+
+        {/* 隐藏canvas用于绘制帧 */}
+        <canvas ref={canvasRef} style={{ display: 'none' }} />
+        </div>
       </div>
 
       <div className='bottom-fixed flex-center'>
@@ -401,7 +414,7 @@ const ProcessVideo: React.FC = () => {
           {loading ? <Spin /> : '处理视频'}
         </Button>
 
-        <Button style={{ marginLeft: '20px' }} onClick={goHomePage}>返回</Button>
+        {/* <Button style={{ marginLeft: '20px' }} onClick={goHomePage}>返回</Button> */}
       </div>
     </div>
   );

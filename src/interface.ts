@@ -13,5 +13,11 @@ export interface Response extends IObject {
   data: ResponseData;
 }
 
+export interface VideoData {
+  videoUrl: string;
+  fileName: string;
+  totalDuration: number;
+}
+
 
 

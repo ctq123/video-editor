@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Upload, Button, message, Card } from 'antd';
+// import { useNavigate } from 'react-router-dom';
+import { Upload, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import http from '../utils/http';
-import { ResponseData } from '../interface.ts';
-import { Utils } from '../utils/Utils.ts';
+import http from '../utils/http.ts';
+import { ResponseData, VideoData } from '../interface.ts';
+// import { Utils } from '../utils/Utils.ts';
 
-const Start: React.FC = () => {
+interface UploadViewProps {
+  successCallback: (data: VideoData) => void;
+}
+
+const UploadView: React.FC<UploadViewProps> = ({ successCallback }) => {
   const [fileList, setFileList] = useState<File[]>([]);
   // const [file1, setFile1] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFileChange = (info: any) => {
@@ -18,9 +22,9 @@ const Start: React.FC = () => {
     setFileList((prev) => [...prev, info.file]);
   };
 
-  const handleRemove = (file: File) => {
-    setFileList(prev => prev.filter(item => item !== file));
-  };
+  // const handleRemove = (file: File) => {
+  //   setFileList(prev => prev.filter(item => item !== file));
+  // };
 
   // 处理视频上传及剪辑操作
   const handleUpload = async () => {
@@ -47,9 +51,11 @@ const Start: React.FC = () => {
 
       if (data.success) {
         // message.success('视频合并成功');
-        Utils.setLocalStorage('processData', data.data, 60 * 60);
+        // Utils.setLocalStorage('processData', data.data, 60 * 60);
         // 这里可以添加合并后视频预览逻辑
-        navigate('/process', { state: { data: data.data } });
+        // navigate('/process', { state: { data: data.data } });
+
+        successCallback(data.data);
       } else {
         message.error(data.message || '视频上传失败');
       }
@@ -64,55 +70,48 @@ const Start: React.FC = () => {
   console.log('fileList', fileList);
 
   return (
-    <div className='container flex-container'>
-      <h1>视频编辑器</h1>
-
+    <>
+      <div className='flex-between w-100'>
+        <div className='block-title'>本地</div>
+        <Button
+          type="dashed" 
+          danger
+          size='small'
+          onClick={handleUpload}
+          loading={loading}
+          disabled={loading || !fileList.length}
+        >
+          上传
+        </Button>
+      </div>
+      
+      <div className='block-content upload-content'>
       <Upload
         accept="video/*"
         showUploadList={false}
         onChange={handleFileChange}
         beforeUpload={() => false} // 禁止自动上传，改为手动处理
       >
-        <button style={{ border: 0, background: 'none' }} type="button">
-          <PlusOutlined />
-          <div style={{ marginTop: 8 }}>添加视频</div>
-        </button>
+        <Button type="primary" shape="circle" icon={<PlusOutlined />} />
+        <span style={{ marginLeft: 8 }}>导入</span>
+        <div className='block-desc'>支持多个视频</div>
       </Upload>
 
       <div className="flex mt-2">
         {fileList.map((file, index) => (
-          <Card
+          <video
             key={index}
-            style={{
-              width: 200,
-              marginRight: 20,
-              marginBottom: 20,
-            }}
-            title={`视频 ${index + 1}`}
-            extra={<Button onClick={() => handleRemove(file)}>删除</Button>}
+            controls
+            style={{ width: 200, maxHeight: 200, marginRight: 8 }}
           >
-            <video
-              controls
-              style={{ width: '100%', maxHeight: '100px' }}
-            >
-              <source src={URL.createObjectURL(file)} type={file.type} />
-              您的浏览器不支持视频标签。
-            </video>
-          </Card>
+            <source src={URL.createObjectURL(file)} type={file.type} />
+            您的浏览器不支持视频标签。
+          </video>
         ))}
       </div>
-      {/* 上传按钮 */}
-      <Button
-        type="primary"
-        onClick={handleUpload}
-        style={{ marginTop: '20px' }}
-        loading={loading}
-        disabled={loading || !fileList.length}
-      >
-        {'上传并处理视频'}
-      </Button>
-    </div>
+      </div>
+    </>
   );
 };
 
-export default Start;
+export default UploadView;
