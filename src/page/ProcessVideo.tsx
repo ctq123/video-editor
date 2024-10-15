@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 // import { useNavigate, useLocation } from 'react-router-dom';
-import { Upload, Button, Slider, Select, message, Spin, Input } from 'antd';
+import { Upload, Button, Slider, Select, message, Input } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import UploadView from '../components/UploadView.tsx';
 import http from '../utils/http.ts';
@@ -27,6 +27,7 @@ const ProcessVideo: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const framelineRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const [frames, setFrames] = useState<{ time: number; image: string }[]>([]);// 本地保存数据帧，方便操作
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -56,6 +57,9 @@ const ProcessVideo: React.FC = () => {
   const getRemoteVideo = async (fileName: string) => {
     if (!fileName) return;
     // 清空时间轴和帧数据
+    if (framelineRef.current) {
+      framelineRef.current.innerHTML = '';
+    }
     if (timelineRef.current) {
       timelineRef.current.innerHTML = '';
     }
@@ -132,18 +136,21 @@ const ProcessVideo: React.FC = () => {
               { time: time, image: frameImage }
             ]);
 
+            const frameW = Math.max(50, frameWidth / totalFrames);
             // 添加帧到时间轴
             const frameElement = document.createElement('img');
             frameElement.src = frameImage;
             // frameElement.crossOrigin = "anonymous";
-            frameElement.style.width = `${Math.max(50, frameWidth / totalFrames)}px`;
+            frameElement.style.width = `${frameW}px`;
             frameElement.className = 'video-frame';
             frameElement.dataset.time = time.toString();
-            frameElement.onclick = () => addOrUpdateCutLine(time, frameElement);
+            frameElement.onclick = () => handleClickFrame(time, frameElement);
 
-            if (timelineRef.current) {
-              timelineRef.current.appendChild(frameElement);
+            if (framelineRef.current) {
+              framelineRef.current.appendChild(frameElement);
             }
+
+            createTimelineLabel(currentFrame, time, frameW)
           }
         }, { once: true }); // 只监听一次，避免重复执行
 
@@ -154,7 +161,36 @@ const ProcessVideo: React.FC = () => {
     }, 1000 / frameRate); // 每秒提取一帧
   };
 
-  const addOrUpdateCutLine = (time: number, frameElement: HTMLImageElement) => {
+  // 创建时间标签并放置在对应的位置
+  const createTimelineLabel = (index: number, time: number, width: number) => {
+    if (!timelineRef.current) return;
+
+    // console.log('createTimelineLabel', index, time);
+
+    const x = width * (index - 1) + 5; // 计算标签位置
+    const timeString = formatTime(time); // 格式化时间
+    const timeLabel = document.createElement('div'); // 创建一个div标签来显示时间
+    timeLabel.className = 'time-label'; // 为div设置样式
+    timeLabel.style.left = `${x}px`; // 根据帧位置设置left值
+    timeLabel.innerText = timeString; // 显示时间
+
+    timelineRef.current.appendChild(timeLabel); // 将时间标签添加到timelineContainer中
+  }
+
+  // 格式化时间为 mm:ss 格式
+  function formatTime(seconds: number) {
+    const minutes = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  }
+
+  const handleClickFrame = (time: number, frameElement: HTMLImageElement) => {
+    // 播放视频
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = time; // 跳转到对应的时间
+    video.play(); // 播放视频
+
     setCutPoints((prevCutPoints) => {
       const updatedCutPoints = [...prevCutPoints];
       // const updatedCutPoints = [...cutPoints];
@@ -370,7 +406,7 @@ const ProcessVideo: React.FC = () => {
         </div>
 
         <div>
-          <span>视频压缩率（范围 0-51，值越低质量越高）: </span>
+          <span>视频压缩率: </span>
           <Slider
             min={0}
             max={51}
@@ -387,11 +423,13 @@ const ProcessVideo: React.FC = () => {
 
       <div className='track-view block'>
         <div className='actions'>
-          <div>操作</div>
+          <div>时间轴</div>
         </div>
-        <div className='track-view-content flex-center'>
+        <div className='track-view-content flex-container flex-center'>
           {/* 时间轴轨道 */}
-        <div ref={timelineRef} className="timeline"></div>
+          <div ref={timelineRef} className="timeline"></div>
+          {/* 视频帧轨道 */}
+        <div ref={framelineRef} className="frameline"></div>
 
         {/* 操作控制区 */}
         {/* <div className="controls">
@@ -410,8 +448,9 @@ const ProcessVideo: React.FC = () => {
           type="primary"
           onClick={handleProcessVideo}
           disabled={loading || !videoUrl}
+          loading={loading}
         >
-          {loading ? <Spin /> : '处理视频'}
+          提交
         </Button>
 
         {/* <Button style={{ marginLeft: '20px' }} onClick={goHomePage}>返回</Button> */}
