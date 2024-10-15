@@ -12,7 +12,6 @@ const Start: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 上传文件后将其存储在 state 中
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFileChange = (info: any) => {
     console.log('handleFileChange', info);
@@ -32,9 +31,7 @@ const Start: React.FC = () => {
     }
 
     const formData = new FormData();
-    // formData.append(`file1`, file1);
     fileList.forEach((file) => {
-      // console.log('file', i, file);
       formData.append(`videos`, file);
     });
 
@@ -49,12 +46,12 @@ const Start: React.FC = () => {
       console.log('data', data);
 
       if (data.success) {
-        message.success('视频合并成功');
+        // message.success('视频合并成功');
         Utils.setLocalStorage('processData', data.data, 60 * 60);
         // 这里可以添加合并后视频预览逻辑
         navigate('/process', { state: { data: data.data } });
       } else {
-        message.error(data.message || '视频合并失败');
+        message.error(data.message || '视频上传失败');
       }
     } catch (error) {
       console.log(error);

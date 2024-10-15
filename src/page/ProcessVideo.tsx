@@ -28,7 +28,7 @@ const ProcessVideo: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const [frames, setFrames] = useState<{ time: number; image: string }[]>([]);// 本地保存数据帧，方便操作
-  const [videoFile, setVideoFile] = useState<File | null>(null);  
+  const [videoFile, setVideoFile] = useState<File | null>(null);
   const [cutPoints, setCutPoints] = useState<{ time: number; cutLine: HTMLDivElement }[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,7 +46,7 @@ const ProcessVideo: React.FC = () => {
       goHomePage();
       return;
     };
-    
+
     setVideoUrl(videoUrl);
     setTimeRange([0, totalDuration]);
 
@@ -90,7 +90,7 @@ const ProcessVideo: React.FC = () => {
   const getVideo = (fileName: string) => {
     if (!fileName) return;
     http.get(`/api/video/${fileName}`, { responseType: 'blob' })
-    .then(response => {
+      .then(response => {
         console.log('文件数据:', response); // 这里是完整的 response 对象
         // const blob = await response.blob(); // 获取视频的 Blob 对象
         // const videoURL = URL.createObjectURL(blob); // 创建 URL
@@ -101,10 +101,10 @@ const ProcessVideo: React.FC = () => {
           videoRef.current.src = videoURL;
           videoRef.current.load();
         }
-    })
-    .catch(error => {
+      })
+      .catch(error => {
         console.error(error);
-    });
+      });
   }
 
   // 提取视频帧
@@ -273,7 +273,7 @@ const ProcessVideo: React.FC = () => {
 
       {/* 视频展示区 */}
       <video ref={videoRef} controls />
-      
+
       {/* 时间轴轨道 */}
       <div ref={timelineRef} className="timeline"></div>
 
@@ -291,21 +291,21 @@ const ProcessVideo: React.FC = () => {
         <Button icon={<UploadOutlined />}>选择视频文件</Button>
       </Upload> */}
       <div className='video-control'>
-      <div style={{ marginBottom: 20 }}>
-        <div>字幕轨道: </div>
-        <Upload beforeUpload={beforeSubtitleUpload} onRemove={() => setSubtitleFile(null)} accept=".srt,.vtt,.ass">
-          <Button icon={<UploadOutlined />}>上传字幕文件</Button>
-        </Upload>
-      </div>
-      <div style={{ marginBottom: 20 }}>
-        <div>音频轨道: </div>
-        <Upload beforeUpload={(file) => { setAudioFile(file); return false; }} onRemove={() => setAudioFile(null)} accept="audio/*">
-          <Button icon={<UploadOutlined />}>选择音频文件</Button>
-        </Upload>
-      </div>
+        <div style={{ marginBottom: 20 }}>
+          <div>字幕轨道: </div>
+          <Upload beforeUpload={beforeSubtitleUpload} onRemove={() => setSubtitleFile(null)} accept=".srt,.vtt,.ass">
+            <Button icon={<UploadOutlined />}>上传字幕文件</Button>
+          </Upload>
+        </div>
+        <div style={{ marginBottom: 20 }}>
+          <div>音频轨道: </div>
+          <Upload beforeUpload={(file) => { setAudioFile(file); return false; }} onRemove={() => setAudioFile(null)} accept="audio/*">
+            <Button icon={<UploadOutlined />}>选择音频文件</Button>
+          </Upload>
+        </div>
 
-      {/* 时间范围选择器 (双滑块) */}
-      {/* <div style={{ marginBottom: 20 }}>
+        {/* 时间范围选择器 (双滑块) */}
+        {/* <div style={{ marginBottom: 20 }}>
         <span>时间轨道（视频分割）: </span>
         <Slider
           range
@@ -317,76 +317,76 @@ const ProcessVideo: React.FC = () => {
         />
       </div> */}
 
-      <div style={{ marginBottom: 20 }}>
-        <span>视频质量: </span>
-        {/* 选择帧率 */}
-        <Select placeholder="选择视频质量" value={fps} onChange={setFPS} style={{ width: 120, marginBottom: 20 }}>
-          <Option value="16">16 FPS</Option>
-          <Option value="32">32 FPS</Option>
-          <Option value="64">64 FPS</Option>
-        </Select>
-      </div>
+        <div style={{ marginBottom: 20 }}>
+          <span>视频质量: </span>
+          {/* 选择帧率 */}
+          <Select placeholder="选择视频质量" value={fps} onChange={setFPS} style={{ width: 120, marginBottom: 20 }}>
+            <Option value="16">16 FPS</Option>
+            <Option value="32">32 FPS</Option>
+            <Option value="64">64 FPS</Option>
+          </Select>
+        </div>
 
-      {/* 音量调节 (单滑块) */}
-      <div style={{ marginBottom: 20 }}>
-        <span>音量: </span>
-        <Slider
-          min={0}
-          max={10}
-          step={0.1}
-          value={volume}
-          onChange={(value) => setVolume(value)}
-        />
-      </div>
+        {/* 音量调节 (单滑块) */}
+        <div style={{ marginBottom: 20 }}>
+          <span>音量: </span>
+          <Slider
+            min={0}
+            max={10}
+            step={0.1}
+            value={volume}
+            onChange={(value) => setVolume(value)}
+          />
+        </div>
 
-      {/* 亮度调节 (单滑块) */}
-      <div style={{ marginBottom: 20 }}>
-        <span>亮度: </span>
-        <Slider
-          min={-1}
-          max={1}
-          step={0.1}
-          value={brightness}
-          onChange={(value) => setBrightness(value)}
-        />
-      </div>
+        {/* 亮度调节 (单滑块) */}
+        <div style={{ marginBottom: 20 }}>
+          <span>亮度: </span>
+          <Slider
+            min={-1}
+            max={1}
+            step={0.1}
+            value={brightness}
+            onChange={(value) => setBrightness(value)}
+          />
+        </div>
 
-      {/* 模糊调节 (单滑块) */}
-      <div style={{ marginBottom: 20 }}>
-        <span>模糊: </span>
-        <Slider
-          min={0}
-          max={10}
-          step={0.1}
-          value={blur}
-          onChange={(value) => setBlur(value)}
-        />
-      </div>
+        {/* 模糊调节 (单滑块) */}
+        <div style={{ marginBottom: 20 }}>
+          <span>模糊: </span>
+          <Slider
+            min={0}
+            max={10}
+            step={0.1}
+            value={blur}
+            onChange={(value) => setBlur(value)}
+          />
+        </div>
 
-      <div style={{ marginBottom: 20 }}>
-        <span>水印: </span>
-        <TextArea placeholder="Autosize height based on content lines" autoSize value={watermarkText} onChange={(e) => setWatermarkText(e.target.value)} />
-      </div>
+        <div style={{ marginBottom: 20 }}>
+          <span>水印: </span>
+          <TextArea placeholder="Autosize height based on content lines" autoSize value={watermarkText} onChange={(e) => setWatermarkText(e.target.value)} />
+        </div>
 
-      <div style={{ marginBottom: 20 }}>
-        <span>视频尺寸: </span>
-        <Select placeholder="选择视频尺寸" value={videoWH} onChange={setVideoWH} style={{ width: 120, marginBottom: 20 }}>
-          <Option value="640x480">640 x 480</Option>
-          <Option value="1280x720">1280 x 720</Option>
-          <Option value="1920x1080">1920 x 1080</Option>
-        </Select>
-      </div>
+        <div style={{ marginBottom: 20 }}>
+          <span>视频尺寸: </span>
+          <Select placeholder="选择视频尺寸" value={videoWH} onChange={setVideoWH} style={{ width: 120, marginBottom: 20 }}>
+            <Option value="640x480">640 x 480</Option>
+            <Option value="1280x720">1280 x 720</Option>
+            <Option value="1920x1080">1920 x 1080</Option>
+          </Select>
+        </div>
 
-      <div style={{ marginBottom: 100 }}>
-        <span>视频压缩率（范围 0-51，值越低质量越高）: </span>
-        <Slider
-          min={0}
-          max={51}
-          step={1}
-          value={crfValue}
-          onChange={(value) => setCRFValue(value)}
-        />
-      </div>
+        <div style={{ marginBottom: 100 }}>
+          <span>视频压缩率（范围 0-51，值越低质量越高）: </span>
+          <Slider
+            min={0}
+            max={51}
+            step={1}
+            value={crfValue}
+            onChange={(value) => setCRFValue(value)}
+          />
+        </div>
       </div>
 
       <div className='bottom-fixed flex-center'>
