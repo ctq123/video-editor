@@ -160,4 +160,43 @@ export class VideoController {
       return { success: false, data: null, message: '处理失败' };
     }
   }
+
+  @Post('/trans')
+  async transformVideoasync(@Files() files, @Fields() fields) {
+    console.log('transformVideoasync', files, fields);
+    // const videoFiles = fields?.videos;
+    if (!Array.isArray(files) || files.length < 1) {
+      return {
+        success: false,
+        data: null,
+        message: '视频文件不能为空',
+      };
+    }
+
+    const { format, videoBitrate, resolution, audioBitrate } = fields;
+
+    const videoPath = files.map(file => file.data).filter(Boolean)[0];
+
+    try {
+      const { outputPath } = await this.videoService.transcodeToFormat(
+        videoPath,
+        format,
+        {
+          videoBitrate,
+          resolution,
+          audioBitrate,
+        }
+      );
+      const fileName = path.basename(outputPath);
+      const videoUrl = `/upload/${fileName}`;
+      return {
+        success: true,
+        data: { videoUrl, fileName },
+        message: '视频转码成功',
+      };
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: null, message: '视频转码失败' };
+    }
+  }
 }

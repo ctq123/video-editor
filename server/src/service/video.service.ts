@@ -2,6 +2,7 @@ import { Provide } from '@midwayjs/core';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import * as path from 'path';
+import { TranscodeOptions } from '../interface';
 
 const videoFilePathMap = {}; // 临时变量-测试使用
 
@@ -31,6 +32,70 @@ export class VideoService {
           resolve(duration);
         }
       });
+    });
+  }
+
+  /**
+   * 转码视频为不同格式
+   * @param {string} inputPath - 输入文件路径
+   * @param {string} format - 要转码的格式列表 (如 ['mp4', 'avi', 'mkv'])
+   * @param {Object} options - 转码选项
+   * @param {string} [options.videoBitrate] - 视频比特率（可选）
+   * @param {string} [options.resolution] - 视频分辨率（可选）
+   * @param {string} [options.audioBitrate] - 音频比特率（可选）
+   */
+  transcodeToFormat(
+    inputPath: string,
+    format: string,
+    options: TranscodeOptions = {}
+  ): Promise<{ outputPath: string }> {
+    const outputDir = path.join(__dirname, '../upload');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    return new Promise((resolve, reject) => {
+      // 根据格式命名输出文件
+      const outputPath = path.join(outputDir, `trans_${Date.now()}.${format}`);
+      const command = ffmpeg(inputPath)
+        .output(outputPath)
+        .on('start', () => {
+          console.log(`开始转码为 ${format} 格式...`);
+        })
+        .on('progress', progress => {
+          console.log(`转码 ${format} 进度: ${progress.percent}% done`);
+        })
+        .on('end', () => {
+          console.log(`${format} 格式转码完成`);
+          resolve({ outputPath });
+        })
+        .on('error', err => {
+          console.error(`${format} 格式转码出错:`, err);
+          reject(err);
+        });
+
+      // 设置视频编码器和格式
+      if (format === 'mp4') {
+        command.videoCodec('libx264').audioCodec('aac');
+      } else if (format === 'avi') {
+        command.videoCodec('libxvid').audioCodec('mp3');
+      } else if (format === 'mkv') {
+        command.videoCodec('libx264').audioCodec('aac');
+      }
+
+      // 根据用户传入的参数设置视频/音频选项
+      if (options.videoBitrate) {
+        command.videoBitrate(options.videoBitrate);
+      }
+      if (options.resolution) {
+        command.size(options.resolution);
+      }
+      if (options.audioBitrate) {
+        command.audioBitrate(options.audioBitrate);
+      }
+
+      // 执行转码
+      command.run();
     });
   }
 

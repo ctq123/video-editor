@@ -70,3 +70,9 @@ export interface IUploadOptions {
   data?: any;
   file: any;
 }
+
+export interface TranscodeOptions {
+  videoBitrate?: string; // 视频比特率
+  resolution?: string; // 视频分辨率
+  audioBitrate?: string; // 音频比特率
+}
