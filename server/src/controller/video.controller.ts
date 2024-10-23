@@ -6,6 +6,7 @@ import {
   Files,
   Fields,
   Provide,
+  RouteParamTypes,
 } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 // import { UploadMiddleware, UploadFileInfo } from '@midwayjs/busboy';
@@ -22,6 +23,7 @@ export class VideoController {
   @Inject()
   videoService: VideoService;
 
+  // 获取视频
   @Get('/:filename')
   async getVideo(ctx) {
     const filename = ctx.params.filename;
@@ -69,6 +71,7 @@ export class VideoController {
   }
 
   // @Post('/merge', { middleware: [UploadMiddleware] })
+  // 视频合并
   @Post('/merge')
   async merge(@Files() files, @Fields() fields) {
     console.log('merge', files, fields);
@@ -101,6 +104,7 @@ export class VideoController {
   }
 
   // @Post('/process', { middleware: [UploadMiddleware] })
+  // 视频处理
   @Post('/process')
   async processVideo(@Files() files, @Fields() fields) {
     // const videoFile = files.video;
@@ -161,6 +165,7 @@ export class VideoController {
     }
   }
 
+  // 视频转码
   @Post('/trans')
   async transformVideoasync(@Files() files, @Fields() fields) {
     console.log('transformVideoasync', files, fields);
