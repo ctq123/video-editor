@@ -25,6 +25,7 @@ const ProcessVideo: React.FC = () => {
   const [crfValue, setCRFValue] = useState<number>(23); // 默认crf值
   // const [videoHeight, setVideoHeight] = useState<number>(720);
   const [loading, setLoading] = useState(false);
+  const [tLoading, setTLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const framelineRef = useRef<HTMLDivElement>(null);
@@ -285,6 +286,37 @@ const ProcessVideo: React.FC = () => {
     }
   };
 
+  const handleTransformCode = async () => {
+    // console.log('数据帧', frames);
+    const formData = new FormData();
+    // if (videoFile) formData.append('video', videoFile);
+    formData.append('videoPath', String(videoUrl));
+
+    try {
+      setTLoading(true);
+      const data: ResponseData = await http.post('/api/video/trans', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (data.success) {
+        message.success('视频处理成功');
+        // 这里可以添加视频预览逻辑
+        const { fileName } = data.data;
+        // setVideoUrl(videoUrl);
+        console.log('视频处理成功', fileName);
+      } else {
+        message.error(data.message || '视频处理失败');
+      }
+    } catch (error) {
+      console.error(error);
+      message.error('请求出错');
+    } finally {
+      setTLoading(false);
+    }
+  };
+
   const beforeSubtitleUpload = (file: File) => {
     const isSubtitle = file.type === 'text/plain' || file.name.endsWith('.srt') || file.name.endsWith('.vtt') || file.name.endsWith('.ass');
     if (!isSubtitle) {
@@ -451,6 +483,16 @@ const ProcessVideo: React.FC = () => {
           loading={loading}
         >
           提交
+        </Button>
+
+        <Button
+          style={{ marginLeft: '20px' }}
+          type="primary"
+          onClick={handleTransformCode}
+          disabled={tLoading || !videoUrl}
+          loading={tLoading}
+        >
+          转码
         </Button>
 
         {/* <Button style={{ marginLeft: '20px' }} onClick={goHomePage}>返回</Button> */}
