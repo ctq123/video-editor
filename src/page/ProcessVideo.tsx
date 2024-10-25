@@ -5,6 +5,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import UploadView from '../components/UploadView.tsx';
 import http from '../utils/http.ts';
 import { ResponseData, VideoData } from '../interface.ts';
+import TransformDrawer from '../components/TransformDrawer.tsx';
 // import Constants from '../utils/Constants.ts';
 // import { Utils } from '../utils/Utils.ts';
 import './ProcessVideo.css';
@@ -25,7 +26,6 @@ const ProcessVideo: React.FC = () => {
   const [crfValue, setCRFValue] = useState<number>(23); // 默认crf值
   // const [videoHeight, setVideoHeight] = useState<number>(720);
   const [loading, setLoading] = useState(false);
-  const [tLoading, setTLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const framelineRef = useRef<HTMLDivElement>(null);
@@ -33,6 +33,7 @@ const ProcessVideo: React.FC = () => {
   const [frames, setFrames] = useState<{ time: number; image: string }[]>([]);// 本地保存数据帧，方便操作
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [cutPoints, setCutPoints] = useState<{ time: number; cutLine: HTMLDivElement }[]>([]);
+  const [open, setOpen] = useState(false); // 控制抽屉打开
   // const navigate = useNavigate();
   // const location = useLocation();
   const frameRate = 1; // 每秒提取一帧
@@ -286,36 +287,7 @@ const ProcessVideo: React.FC = () => {
     }
   };
 
-  const handleTransformCode = async () => {
-    // console.log('数据帧', frames);
-    const formData = new FormData();
-    // if (videoFile) formData.append('video', videoFile);
-    formData.append('videoPath', String(videoUrl));
-
-    try {
-      setTLoading(true);
-      const data: ResponseData = await http.post('/api/video/trans', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (data.success) {
-        message.success('视频处理成功');
-        // 这里可以添加视频预览逻辑
-        const { fileName } = data.data;
-        // setVideoUrl(videoUrl);
-        console.log('视频处理成功', fileName);
-      } else {
-        message.error(data.message || '视频处理失败');
-      }
-    } catch (error) {
-      console.error(error);
-      message.error('请求出错');
-    } finally {
-      setTLoading(false);
-    }
-  };
+  
 
   const beforeSubtitleUpload = (file: File) => {
     const isSubtitle = file.type === 'text/plain' || file.name.endsWith('.srt') || file.name.endsWith('.vtt') || file.name.endsWith('.ass');
@@ -475,6 +447,8 @@ const ProcessVideo: React.FC = () => {
         </div>
       </div>
 
+      <TransformDrawer isOpen={open} videoUrl={videoUrl} setIsOpen={(v) => setOpen(v)} />
+
       <div className='bottom-fixed flex-center'>
         <Button
           type="primary"
@@ -488,9 +462,7 @@ const ProcessVideo: React.FC = () => {
         <Button
           style={{ marginLeft: '20px' }}
           type="primary"
-          onClick={handleTransformCode}
-          disabled={tLoading || !videoUrl}
-          loading={tLoading}
+          onClick={() => setOpen(true)}
         >
           转码
         </Button>
