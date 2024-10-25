@@ -115,7 +115,7 @@ const TransformDrawer: React.FC<IProps> = ({ videoUrl, isOpen, setIsOpen }) => {
                 label="视频比特率"
                 rules={[{ required: false, message: '请选择视频比特率' }]}
               >
-                <Select placeholder="请选择视频比特率">
+                <Select placeholder="请选择视频比特率" allowClear>
                   <Option value="1000k">1000k</Option>
                 </Select>
               </Form.Item>
@@ -128,7 +128,7 @@ const TransformDrawer: React.FC<IProps> = ({ videoUrl, isOpen, setIsOpen }) => {
                 label="视频分辨率"
                 rules={[{ required: false, message: '请选择视频分辨率' }]}
               >
-                <Select placeholder="请选择视频分辨率">
+                <Select placeholder="请选择视频分辨率" allowClear>
                   <Option value="1280x720">1280 x 720</Option>
                   <Option value="960x640">960 x 640</Option>
                 </Select>
@@ -142,7 +142,7 @@ const TransformDrawer: React.FC<IProps> = ({ videoUrl, isOpen, setIsOpen }) => {
                 label="音频比特率"
                 rules={[{ required: false, message: '请选择音频比特率' }]}
               >
-                <Select placeholder="请选择音频比特率">
+                <Select placeholder="请选择音频比特率" allowClear>
                   <Option value="128k">128k</Option>
                 </Select>
               </Form.Item>
