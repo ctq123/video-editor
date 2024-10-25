@@ -170,21 +170,27 @@ export class VideoController {
   async transformVideoasync(@Files() files, @Fields() fields) {
     console.log('transformVideoasync', files, fields);
     // const videoFiles = fields?.videos;
-    if (!Array.isArray(files) || files.length < 1) {
+    const { videoPath, format, videoBitrate, resolution, audioBitrate } =
+      fields;
+
+    const videoFilePath = path.join(__dirname, '..', videoPath);
+    if (!videoPath || !fs.existsSync(videoFilePath)) {
+      return { success: false, message: '视频文件不存在' };
+    }
+
+    if (!format) {
       return {
         success: false,
         data: null,
-        message: '视频文件不能为空',
+        message: '参数不合法',
       };
     }
 
-    const { format, videoBitrate, resolution, audioBitrate } = fields;
-
-    const videoPath = files.map(file => file.data).filter(Boolean)[0];
+    // const videoPath = files.map(file => file.data).filter(Boolean)[0];
 
     try {
       const { outputPath } = await this.videoService.transcodeToFormat(
-        videoPath,
+        videoFilePath,
         format,
         {
           videoBitrate,
