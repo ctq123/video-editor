@@ -50,4 +50,11 @@ export class Utils {
     return null
   }
 
+  static DownloadFile(url: string, filename: string) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+  }
+
 }
