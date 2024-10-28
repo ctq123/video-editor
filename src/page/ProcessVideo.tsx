@@ -68,7 +68,7 @@ const ProcessVideo: React.FC = () => {
     setFrames([]);
     setCutPoints([]);
 
-    getVideo(fileName, setVideoData);
+    getVideo(fileName);
   }
 
   // const goHomePage = () => {
@@ -87,35 +87,24 @@ const ProcessVideo: React.FC = () => {
     getRemoteVideo(fileName); // 初始化
   }
 
-  const getVideo = (fileName: string, callback: (d: File) => void) => {
+  const getVideo = (fileName: string) => {
     if (!fileName) return;
     http.get(`/api/video/${fileName}`, { responseType: 'blob' })
       .then(response => {
         console.log('文件数据:', response); // 这里是完整的 response 对象
         // const blob = await response.blob(); // 获取视频的 Blob 对象
         // const videoURL = URL.createObjectURL(blob); // 创建 URL
-        // const videoURL = URL.createObjectURL(response.data);
-        // setVideoFile(response.data);
-        // // 你可以使用 videoURL 来展示文件，例如视频或图片
-        // if (videoRef.current) {
-        //   videoRef.current.src = videoURL;
-        //   videoRef.current.load();
-        // }
-        callback(response.data);
+        const videoURL = URL.createObjectURL(response.data);
+        setVideoFile(response.data);
+        // 你可以使用 videoURL 来展示文件，例如视频或图片
+        if (videoRef.current) {
+          videoRef.current.src = videoURL;
+          videoRef.current.load();
+        }
       })
       .catch(error => {
         console.error(error);
       });
-  }
-
-  const setVideoData = (blob: File) => {
-    const videoURL = URL.createObjectURL(blob);
-    setVideoFile(blob);
-    // 你可以使用 videoURL 来展示文件，例如视频或图片
-    if (videoRef.current) {
-      videoRef.current.src = videoURL;
-      videoRef.current.load();
-    }
   }
 
   // 提取视频帧

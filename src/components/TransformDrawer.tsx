@@ -3,6 +3,7 @@ import { Button, Col, Drawer, Form, Row, Select, message } from 'antd';
 import type { FormProps } from 'antd';
 import http from '../utils/http.ts';
 import { ResponseData } from '../interface.ts';
+import { Utils } from '../utils/Utils.ts';
 
 interface IProps {
   videoUrl: string;
@@ -63,7 +64,7 @@ const TransformDrawer: React.FC<IProps> = ({ videoUrl, isOpen, setIsOpen }) => {
         // setVideoUrl(videoUrl);
         console.log('视频处理成功', fileName);
 
-        setIsOpen(false); // 关闭抽屉
+        handleDownload(fileName); // 下载视频
       } else {
         message.error(data.message || '视频处理失败');
       }
@@ -74,6 +75,22 @@ const TransformDrawer: React.FC<IProps> = ({ videoUrl, isOpen, setIsOpen }) => {
       setLoading(false);
     }
   };
+
+  const handleDownload = (fileName: string) => {
+    if (!fileName) return;
+    http.get(`/api/video/${fileName}`, { responseType: 'blob' })
+      .then(response => {
+        console.log('文件数据:', response); // 这里是完整的 response 对象
+        const videoURL = URL.createObjectURL(response.data);
+        Utils.DownloadFile(videoURL, fileName);
+
+        setIsOpen(false); // 关闭抽屉
+      })
+      .catch(error => {
+        console.error(error);
+        message.error('视频下载失败');
+      });
+  }
 
   return (
     <>
