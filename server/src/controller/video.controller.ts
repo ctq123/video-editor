@@ -6,7 +6,6 @@ import {
   Files,
   Fields,
   Provide,
-  RouteParamTypes,
 } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 // import { UploadMiddleware, UploadFileInfo } from '@midwayjs/busboy';
