@@ -456,15 +456,15 @@ const ProcessVideo: React.FC = () => {
           disabled={loading || !videoUrl}
           loading={loading}
         >
-          提交
+          提交编辑
         </Button>
 
         <Button
           style={{ marginLeft: '20px' }}
-          type="primary"
+          type="default"
           onClick={() => setOpen(true)}
         >
-          转码
+          转码器
         </Button>
 
         {/* <Button style={{ marginLeft: '20px' }} onClick={goHomePage}>返回</Button> */}

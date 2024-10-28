@@ -24,7 +24,7 @@ const TransformDrawer: React.FC<IProps> = ({ videoUrl, isOpen, setIsOpen }) => {
   const [loading, setLoading] = React.useState(false);
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    console.log('Success:', values);
+    console.log('参数:', values);
     handleTransformCode(values);
   };
 
@@ -119,7 +119,6 @@ const TransformDrawer: React.FC<IProps> = ({ videoUrl, isOpen, setIsOpen }) => {
               >
                 <Select placeholder="请选择格式">
                   <Option value="mp4">mp4</Option>
-                  <Option value="avi">avi</Option>
                   <Option value="mkv">mkv</Option>
                 </Select>
               </Form.Item>
