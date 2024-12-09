@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import './ProcessVideo.css'
 
+
+// TODO: 添加本地化web worker处理视频剪辑
 const VideoEditor: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);

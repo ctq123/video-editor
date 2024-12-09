@@ -336,19 +336,6 @@ const ProcessVideo: React.FC = () => {
           </Upload>
         </div>
 
-        {/* 时间范围选择器 (双滑块) */}
-        {/* <div style={{ marginBottom: 20 }}>
-        <span>时间轨道（视频分割）: </span>
-        <Slider
-          range
-          min={0}
-          max={60} // 假设最大时间为60秒
-          step={1}
-          value={timeRange}
-          onChange={(value) => setTimeRange(value as [number, number])}
-        />
-      </div> */}
-
         <div>
           <span>视频质量: </span>
           {/* 选择帧率 */}

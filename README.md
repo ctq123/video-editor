@@ -72,3 +72,8 @@ yarn dev
     到ffmpeg官网下载 Windows 版本的 ffmpeg 压缩包，然后解压，将 bin 目录配置到系统PATH 环境变量中
     ```
 
+## 下一步计划
+1）优化界面，支持多轨道，参考剪映APP
+2）加入web worker和webassembly，本地处理视频，减少服务器压力
+3）加入更多特效功能
+
